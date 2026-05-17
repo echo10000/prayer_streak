@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block title %}Community Prayer Board | PrayerStreak PH{% endblock %}
+
+{% block content %}
+<div class="mx-auto max-w-4xl space-y-6">
+    <section class="card-surface p-6 sm:p-8">
+        <p class="text-sm font-semibold uppercase tracking-wide" style="color:#8B6914">Community</p>
+        <h1 class="mt-2 text-3xl font-extrabold text-ps-blue sm:text-4xl" data-en="Community Prayer Board" data-fil="Lupon ng Panalangin ng Komunidad">Community Prayer Board</h1>
+        <p class="mt-3" style="color:#6B5B3E">Lift each other up in prayer. No names, no likes - just intercession.</p>
+        <p class="mt-4" style="color:#8B6914; font-size:0.9rem;">
+            {{ total_prayers_today }} prayer{% if total_prayers_today != 1 %}s{% endif %} lifted to God today
+        </p>
+    </section>
+
+    <section class="card-surface p-6 sm:p-8">
+        <form method="post" class="space-y-4">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="create_request">
+            <div>
+                <label for="{{ form.content.id_for_label }}" class="sr-only">Share your prayer request</label>
+                {{ form.content }}
+                <p id="request-counter" class="mt-2 text-sm" style="color:#6B5B3E">0 / 500</p>
+                {% if form.content.errors %}
+                    <p class="mt-2 text-sm text-red-600">{{ form.content.errors|striptags }}</p>
+                {% endif %}
+            </div>
+
+            <a href="#" id="more-options-toggle" class="inline-block text-sm font-bold" style="color:#8B6914; text-decoration:none;">+ More options</a>
+            <div id="more-options" style="max-height:0; overflow:hidden; transition:max-height 0.3s ease;">
+                <div class="grid gap-4 pt-4 sm:grid-cols-3">
+                    <div>
+                        <label for="{{ form.priority.id_for_label }}" class="mb-2 block text-sm font-semibold text-ps-blue">Priority</label>
+                        {{ form.priority }}
+                    </div>
+                    <div>
+                        <label for="{{ form.follow_up_date.id_for_label }}" class="mb-2 block text-sm font-semibold text-ps-blue">Follow-up date</label>
+                        {{ form.follow_up_date }}
+                    </div>
+                    <div>
+                        <label for="{{ form.group.id_for_label }}" class="mb-2 block text-sm font-semibold text-ps-blue">Group</label>
+                        {{ form.group }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <label class="inline-flex items-center gap-2 text-sm font-semibold text-ps-blue">
+                    {{ form.is_anonymous }}
+                    <span data-en="Post anonymously" data-fil="Mag-post nang hindi nagpapakilala">Post anonymously</span>
+                </label>
+                <button type="submit" class="btn-primary">
+                    <span data-en="Submit for prayer" data-fil="Isumite para ipanalangin">Submit for prayer</span>
+                </button>
+            </div>
+        </form>
+    </section>
+
+    <section class="space-y-4">
+        {% for prayer_request in requests %}
+            <article class="rounded-xl border border-[#DDD5C0] p-5" style="background:#FDFAF4">
+                <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                    <div>
+                        <p class="font-bold text-ps-blue">
+                            {% if prayer_request.is_anonymous or not prayer_request.user %}
+                                Anonymous
+                            {% else %}
+                                {{ prayer_request.user.username }}
+                            {% endif %}
+                            <span class="font-medium" style="color:#6B5B3E"> · {{ prayer_request.date|timesince }} ago</span>
+                        </p>
+                    </div>
+                    {% if user in prayer_request.prayed_by.all %}
+                        <button type="button" disabled class="btn-primary btn-sm" style="background:#8B6914;">
+                            <i class="ti ti-check"></i> Prayed · {{ prayer_request.prayed_count }}
+                        </button>
+                    {% else %}
+                        <form method="post" action="{% url 'pray_for' prayer_request.pk %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-secondary btn-sm">
+                                I prayed for this · {{ prayer_request.prayed_count }}
+                            </button>
+                        </form>
+                    {% endif %}
+                </div>
+                <p class="mt-4 whitespace-pre-line leading-8 text-ps-blue">{{ prayer_request.content }}</p>
+            </article>
+        {% empty %}
+            <div style="text-align:center; padding:3rem; color:#6B5B3E;">
+                <i class="ti ti-users" style="font-size:2.5rem; color:#8B6914; display:block; margin-bottom:12px;"></i>
+                <p data-en="No prayer requests yet" data-fil="Wala pang kahilingang panalangin">No prayer requests yet</p>
+                <p style="font-size:0.85rem;">This board is a safe, prayerful space.</p>
+            </div>
+        {% endfor %}
+    </section>
+
+    <section class="card-surface p-6 sm:p-8">
+        <button type="button" id="groups-toggle" class="flex w-full items-center justify-between text-left text-2xl font-extrabold text-ps-blue" style="background:transparent; border:0; cursor:pointer;">
+            <span>Prayer Groups</span>
+            <span id="groups-toggle-icon" style="color:#8B6914;">+</span>
+        </button>
+        <div id="groups-panel" style="max-height:0; overflow:hidden; transition:max-height 0.3s ease;">
+            <form method="post" class="mt-5 space-y-4">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="create_group">
+                <input name="name" required class="w-full rounded-xl border border-[#DDD5C0] bg-[#FDFAF4] px-4 py-3 text-ps-blue outline-none" placeholder="Group name">
+                <textarea name="description" rows="3" class="w-full resize-none rounded-xl border border-[#DDD5C0] bg-[#FDFAF4] px-4 py-3 text-ps-blue outline-none" placeholder="Optional description"></textarea>
+                <button type="submit" class="btn-primary">Create group</button>
+            </form>
+            <div class="mt-5 space-y-2">
+                {% for group in my_groups %}
+                    <p class="rounded-xl px-4 py-3 text-sm font-semibold text-ps-blue" style="background:#EDE8DC">{{ group.name }}</p>
+                {% empty %}
+                    <p class="text-sm" style="color:#6B5B3E">Create a group for private shared requests.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+</div>
+
+<script>
+    const requestBox = document.getElementById("{{ form.content.id_for_label }}");
+    const requestCounter = document.getElementById("request-counter");
+    function updateCounter() {
+        if (requestBox && requestCounter) {
+            requestCounter.textContent = requestBox.value.length + " / 500";
+        }
+    }
+    requestBox?.addEventListener("input", updateCounter);
+    updateCounter();
+
+    document.getElementById("more-options-toggle")?.addEventListener("click", function(event) {
+        event.preventDefault();
+        const panel = document.getElementById("more-options");
+        const isOpen = panel.style.maxHeight !== "0px" && panel.style.maxHeight !== "";
+        panel.style.maxHeight = isOpen ? "0" : panel.scrollHeight + "px";
+        this.textContent = isOpen ? "+ More options" : "- More options";
+    });
+
+    document.getElementById("groups-toggle")?.addEventListener("click", function() {
+        const panel = document.getElementById("groups-panel");
+        const icon = document.getElementById("groups-toggle-icon");
+        const isOpen = panel.style.maxHeight !== "0px" && panel.style.maxHeight !== "";
+        panel.style.maxHeight = isOpen ? "0" : panel.scrollHeight + "px";
+        icon.textContent = isOpen ? "+" : "-";
+    });
+</script>
+{% endblock %}

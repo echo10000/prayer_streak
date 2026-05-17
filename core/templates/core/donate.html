@@ -5,33 +5,38 @@
 
 {% block content %}
 <div class="space-y-6">
-    {% if messages %}
-        {% for message in messages %}
-            <section class="rounded-2xl border border-amber-200 bg-amber-50 p-6 text-center shadow-sm shadow-amber-100">
-                <p class="text-xl font-extrabold text-ps-blue">{{ message }}</p>
-            </section>
-        {% endfor %}
-    {% endif %}
-
-    <section class="rounded-2xl border border-amber-100 bg-white p-6 shadow-sm shadow-amber-100 sm:p-8">
-        <p class="text-sm font-semibold uppercase tracking-wide text-ps-gold">Support the mission</p>
-        <h1 class="mt-2 text-3xl font-extrabold text-ps-blue sm:text-4xl">Donate to PrayerStreak PH</h1>
-        <p class="mt-3 max-w-2xl text-slate-600">Your support helps keep daily devotionals, prayer journaling, and community features running.</p>
+    <section class="card-surface p-6 sm:p-8">
+        <p class="text-sm font-semibold uppercase tracking-wide" style="color:#8B6914">Support the mission</p>
+        <h1 class="mt-2 text-3xl font-extrabold text-ps-blue sm:text-4xl" data-en="Donate to PrayerStreak PH" data-fil="Mag-ambag sa PrayerStreak PH">Donate to PrayerStreak PH</h1>
+        <p class="mt-3 max-w-2xl" style="color:#6B5B3E">Your support helps keep daily devotionals, prayer journaling, and community features running.</p>
     </section>
 
-    <section class="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-        <div class="rounded-2xl border border-amber-100 bg-white p-6 shadow-sm shadow-amber-100">
-            <p class="text-sm font-semibold uppercase tracking-wide text-ps-gold">How to donate</p>
-            <h2 class="mt-2 text-2xl font-extrabold text-ps-blue">Manual giving details</h2>
+    <div style="background:#EDE8DC; border-radius:12px; padding:1rem 1.25rem; margin-bottom:1.5rem; border-left:3px solid #8B6914; border-radius:0 12px 12px 0;">
+        <p style="font-size:0.9rem; color:#4A3000; line-height:1.7;">
+            Your support pays for server hosting, daily verse curation, and keeping PrayerStreak PH completely free for every Filipino who wants to pray.
+            <strong>Every peso matters.</strong>
+        </p>
+    </div>
 
-            <div class="mt-6 rounded-2xl border-2 border-ps-gold bg-amber-50 p-4 text-center">
-                <img src="{% static 'core/images/gcash_qr.png' %}" alt="GCash QR code" class="mx-auto aspect-square w-full max-w-xs rounded-xl bg-white object-contain p-3 shadow-sm">
-                <p class="mt-4 text-sm font-semibold text-slate-600">GCash number</p>
+    <section class="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
+        <div class="card-surface p-6">
+            <p class="text-sm font-semibold uppercase tracking-wide" style="color:#8B6914">How to donate</p>
+            <h2 class="mt-2 text-2xl font-extrabold text-ps-blue" data-en="Manual giving details" data-fil="Detalye ng pagbibigay">Manual giving details</h2>
+
+            <div class="mt-6 rounded-xl border-2 border-ps-gold p-4 text-center" style="background:#EDE8DC">
+                <!-- TO REPLACE: upload your GCash QR as core/static/core/images/gcash_qr.png
+                     then change this div back to: <img src="{% static 'core/images/gcash_qr.png' %}"> -->
+                <div style="background:#F0EAD6; border:2px dashed #8B6914; border-radius:12px; padding:2rem; text-align:center; color:#8B6914; font-size:13px;">
+                    <i class="ti ti-qrcode" style="font-size:48px; display:block; margin-bottom:8px;"></i>
+                    GCash QR code<br>
+                    <span style="font-size:11px; opacity:0.7;">Upload your QR to replace this</span>
+                </div>
+                <p class="mt-4 text-sm font-semibold" style="color:#6B5B3E">GCash number</p>
                 <p class="mt-1 text-xl font-extrabold text-ps-blue">09XX XXX XXXX</p>
             </div>
 
-            <div class="mt-5 rounded-xl border border-amber-100 bg-white p-4">
-                <p class="text-sm font-bold uppercase tracking-wide text-ps-gold">BPI account details</p>
+            <div class="card-surface mt-5 p-4">
+                <p class="text-sm font-bold uppercase tracking-wide" style="color:#8B6914">BPI account details</p>
                 <div class="mt-3 space-y-1 text-sm font-medium text-ps-blue">
                     <p>Account Name: PrayerStreak PH</p>
                     <p>Account Number: 0000-0000-00</p>
@@ -40,8 +45,8 @@
             </div>
         </div>
 
-        <div class="rounded-2xl border border-amber-100 bg-white p-6 shadow-sm shadow-amber-100">
-            <p class="text-sm font-semibold uppercase tracking-wide text-ps-gold">Donation acknowledgment</p>
+        <div class="card-surface p-6">
+            <p class="text-sm font-semibold uppercase tracking-wide" style="color:#8B6914">Donation acknowledgment</p>
             <h2 class="mt-2 text-2xl font-extrabold text-ps-blue">Send your donation details</h2>
 
             <form method="post" class="mt-6 space-y-5">
@@ -64,6 +69,12 @@
                 <div class="grid gap-5 sm:grid-cols-2">
                     <div>
                         <label for="{{ form.amount.id_for_label }}" class="mb-2 block text-sm font-semibold text-ps-blue">Amount</label>
+                        <div style="display:flex; gap:8px; margin-bottom:8px; flex-wrap:wrap;">
+                            <button type="button" onclick="document.getElementById('id_amount').value='50'" style="padding:6px 16px; border:1px solid #8B6914; border-radius:20px; background:transparent; color:#8B6914; font-size:13px; cursor:pointer;">₱50</button>
+                            <button type="button" onclick="document.getElementById('id_amount').value='100'" style="padding:6px 16px; border:1px solid #8B6914; border-radius:20px; background:transparent; color:#8B6914; font-size:13px; cursor:pointer;">₱100</button>
+                            <button type="button" onclick="document.getElementById('id_amount').value='200'" style="padding:6px 16px; border:1px solid #8B6914; border-radius:20px; background:transparent; color:#8B6914; font-size:13px; cursor:pointer;">₱200</button>
+                            <button type="button" onclick="document.getElementById('id_amount').value='500'" style="padding:6px 16px; border:1px solid #8B6914; border-radius:20px; background:transparent; color:#8B6914; font-size:13px; cursor:pointer;">₱500</button>
+                        </div>
                         {{ form.amount }}
                         {% if form.amount.errors %}
                             <p class="mt-2 text-sm text-red-600">{{ form.amount.errors|striptags }}</p>
@@ -95,8 +106,8 @@
                     {% endif %}
                 </div>
 
-                <button type="submit" class="w-full rounded-xl bg-ps-gold px-5 py-3 font-bold text-white transition hover:bg-ps-blue sm:w-auto">
-                    Submit acknowledgment
+                <button type="submit" class="btn-primary w-full sm:w-auto">
+                    <span data-en="Submit acknowledgment" data-fil="Isumite ang pagkilala">Submit acknowledgment</span>
                 </button>
             </form>
         </div>

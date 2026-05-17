@@ -1,0 +1,245 @@
+{% extends "base.html" %}
+
+{% block title %}Settings | PrayerStreak PH{% endblock %}
+
+{% block content %}
+<div class="mx-auto max-w-4xl">
+    <section class="card-surface p-6 sm:p-8">
+        <p class="text-sm font-semibold uppercase tracking-wide" style="color:#8B6914">Settings</p>
+        <h1 class="mt-2 text-3xl font-extrabold text-ps-blue sm:text-4xl">Prayer settings</h1>
+        <p class="mt-3" style="color:#6B5B3E">Shape your display, prayer rhythm, reminders, plans, and account.</p>
+
+        <form method="post" class="mt-8">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="settings">
+
+            <section>
+                <h2 class="text-2xl font-extrabold text-ps-blue">Display</h2>
+                <div class="mt-5 space-y-5">
+                    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                        <p class="font-semibold text-ps-blue">Text size</p>
+                        <div class="inline-flex rounded-full border border-[#DDD5C0] bg-[#FDFAF4] p-1">
+                            <button type="button" class="font-size-btn" data-size="16px" style="font-size:0.8125rem">A</button>
+                            <button type="button" class="font-size-btn" data-size="20px" style="font-size:1rem">A</button>
+                            <button type="button" class="font-size-btn" data-size="24px" style="font-size:1.25rem">A</button>
+                        </div>
+                    </div>
+                    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                        <p class="font-semibold text-ps-blue">Language</p>
+                        <div class="inline-flex rounded-full border border-[#DDD5C0] bg-[#FDFAF4] p-1">
+                            <button type="button" class="lang-btn" data-lang="en">EN</button>
+                            <button type="button" class="lang-btn" data-lang="fil">FIL</button>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between gap-4">
+                        <p class="font-semibold text-ps-blue">High contrast mode</p>
+                        <label class="toggle-switch">
+                            <input type="checkbox" name="dark_mode" {% if user.dark_mode %}checked{% endif %}>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </section>
+
+            <hr style="border:none; border-top:1px solid #DDD5C0; margin:2rem 0;">
+
+            <section>
+                <h2 class="text-2xl font-extrabold text-ps-blue">Prayer rhythm</h2>
+                <div class="mt-5 space-y-5">
+                    <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                        <label for="quiet_time" class="font-semibold text-ps-blue">Quiet time</label>
+                        <input id="quiet_time" type="time" name="quiet_time" value="{{ user.quiet_time|time:'H:i'|default:'06:00' }}" class="rounded-xl border border-[#DDD5C0] bg-[#FDFAF4] px-4 py-3 text-ps-blue outline-none">
+                    </div>
+                    <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                        <label for="prayer_focus" class="font-semibold text-ps-blue">Prayer focus</label>
+                        <select id="prayer_focus" name="prayer_focus" class="rounded-xl border border-[#DDD5C0] bg-[#FDFAF4] px-4 py-3 text-ps-blue outline-none">
+                            {% for value, label in prayer_focus_choices %}
+                                <option value="{{ value }}" {% if user.prayer_focus == value %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="flex items-start justify-between gap-4">
+                        <div>
+                            <p class="font-semibold text-ps-blue">Sabbath mode</p>
+                            <p class="mt-1 text-sm" style="color:#6B5B3E">When enabled, no streak pressure on your rest day</p>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" name="sabbath_mode" {% if user.sabbath_mode %}checked{% endif %}>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <button type="submit" class="btn-primary w-full">Save preferences</button>
+                </div>
+            </section>
+        </form>
+
+        <hr style="border:none; border-top:1px solid #DDD5C0; margin:2rem 0;">
+
+        <section>
+            <h2 class="text-2xl font-extrabold text-ps-blue">Reminders</h2>
+            <form method="post" class="mt-5 grid gap-4">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="add_reminder">
+                <div class="grid gap-4 sm:grid-cols-3">
+                    <div>
+                        <label for="{{ form.routine.id_for_label }}" class="mb-2 block text-sm font-semibold text-ps-blue">Routine</label>
+                        {{ form.routine }}
+                    </div>
+                    <div>
+                        <label for="{{ form.label.id_for_label }}" class="mb-2 block text-sm font-semibold text-ps-blue">Label</label>
+                        {{ form.label }}
+                    </div>
+                    <div>
+                        <label for="{{ form.time.id_for_label }}" class="mb-2 block text-sm font-semibold text-ps-blue">Time</label>
+                        {{ form.time }}
+                    </div>
+                </div>
+                <div class="flex flex-wrap gap-6">
+                    <label class="flex items-center gap-3 font-semibold text-ps-blue">
+                        <span>Email</span>
+                        <span class="toggle-switch">{{ form.email_enabled }}<span class="toggle-slider"></span></span>
+                    </label>
+                    <label class="flex items-center gap-3 font-semibold text-ps-blue">
+                        <span>Push notifications</span>
+                        <span class="toggle-switch">{{ form.push_enabled }}<span class="toggle-slider"></span></span>
+                    </label>
+                    <label class="flex items-center gap-3 font-semibold text-ps-blue">
+                        <span>Active</span>
+                        <span class="toggle-switch">{{ form.is_active }}<span class="toggle-slider"></span></span>
+                    </label>
+                </div>
+                <div class="flex flex-wrap gap-3">
+                    <button type="submit" class="btn-primary">Save reminder</button>
+                    <button id="enable-push-btn" type="button" class="btn-secondary">Enable push notifications on this device</button>
+                </div>
+                <p id="push-status" class="text-sm font-semibold" style="color:#6B5B3E"></p>
+            </form>
+
+            <div class="mt-7">
+                <h3 class="font-bold text-ps-blue">Your reminders</h3>
+                <div class="mt-3 space-y-3">
+                    {% for reminder in reminders %}
+                        <div class="flex items-center justify-between gap-4 rounded-xl p-4" style="background:#EDE8DC">
+                            <div>
+                                <p class="font-bold text-ps-blue">{{ reminder.label|default:reminder.get_routine_display }}</p>
+                                <p class="text-sm" style="color:#6B5B3E">{{ reminder.get_routine_display }} at {{ reminder.time|time:"g:i A" }}</p>
+                            </div>
+                            <form method="post" action="{% url 'delete_reminder' reminder.pk %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn-danger btn-sm">Delete</button>
+                            </form>
+                        </div>
+                    {% empty %}
+                        <p class="rounded-xl p-4 text-sm" style="background:#EDE8DC;color:#6B5B3E">No reminders yet. Add one above.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+
+        <hr style="border:none; border-top:1px solid #DDD5C0; margin:2rem 0;">
+
+        <section>
+            <h2 class="text-2xl font-extrabold text-ps-blue">Prayer plans</h2>
+            <div class="mt-5 grid gap-4 md:grid-cols-2">
+                {% for card in plan_cards %}
+                    <article class="rounded-xl border border-[#DDD5C0] p-5" style="background:#FDFAF4">
+                        <div class="flex items-start justify-between gap-3">
+                            <h3 class="font-bold text-ps-blue">{{ card.plan.title }}</h3>
+                            <span class="rounded-full px-3 py-1 text-xs font-bold" style="background:#FAEEDA;color:#8B6914">{{ card.plan.days }} days</span>
+                        </div>
+                        <p class="mt-2 line-clamp-2 text-sm leading-6" style="color:#6B5B3E">{{ card.plan.description|default:"A guided prayer rhythm for ordinary days." }}</p>
+                        <ul class="mt-4 list-disc space-y-1 pl-5 text-sm" style="color:#6B5B3E">
+                            <li>Daily verse</li>
+                            <li>Guided reflection</li>
+                            <li>Journal prompt</li>
+                        </ul>
+                        {% if card.active_plan %}
+                            <div class="mt-4">
+                                <div class="flex justify-between text-xs font-semibold" style="color:#6B5B3E">
+                                    <span>Day {{ card.active_plan.current_day }} of {{ card.plan.days }}</span>
+                                    <span>{{ card.progress_percent }}%</span>
+                                </div>
+                                <div class="mt-1 h-2 rounded-full" style="background:#EDE8DC">
+                                    <div class="h-2 rounded-full" style="background:#8B6914; width:{{ card.progress_percent }}%;"></div>
+                                </div>
+                            </div>
+                            <a href="/dashboard/" class="btn-primary mt-4 inline-block">Continue - Day {{ card.active_plan.current_day }} of {{ card.plan.days }}</a>
+                        {% else %}
+                            <form method="post" action="{% url 'start_prayer_plan' card.plan.pk %}" class="mt-4">
+                                {% csrf_token %}
+                                <button type="submit" class="btn-primary">Start plan</button>
+                            </form>
+                        {% endif %}
+                    </article>
+                {% empty %}
+                    <p class="text-sm" style="color:#6B5B3E">Prayer plans can be created in the admin dashboard.</p>
+                {% endfor %}
+            </div>
+        </section>
+
+        <hr style="border:none; border-top:1px solid #DDD5C0; margin:2rem 0;">
+
+        <section>
+            <h2 class="text-2xl font-extrabold text-ps-blue">Account</h2>
+            <div class="mt-5 grid gap-3 rounded-xl p-4" style="background:#EDE8DC">
+                <p class="text-sm" style="color:#6B5B3E">Username</p>
+                <p class="font-bold text-ps-blue">{{ user.username }}</p>
+                <p class="text-sm" style="color:#6B5B3E">Email</p>
+                <p class="font-bold text-ps-blue">{{ user.email|default:"No email set" }}</p>
+                <a href="#" class="text-sm font-bold" style="color:#8B6914">Change password</a>
+                <a href="#" class="text-sm font-bold" style="color:#A32D2D">Delete my account</a>
+            </div>
+        </section>
+    </section>
+</div>
+
+<script>
+    const vapidPublicKey = "{{ vapid_public_key|escapejs }}";
+    const pushButton = document.getElementById("enable-push-btn");
+    const pushStatus = document.getElementById("push-status");
+
+    function urlBase64ToUint8Array(base64String) {
+        const padding = "=".repeat((4 - base64String.length % 4) % 4);
+        const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
+        const rawData = window.atob(base64);
+        return Uint8Array.from([...rawData].map((char) => char.charCodeAt(0)));
+    }
+
+    function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(";").shift();
+        return "";
+    }
+
+    pushButton?.addEventListener("click", async () => {
+        if (!vapidPublicKey) {
+            pushStatus.textContent = "Push is not configured yet. Add VAPID keys in environment settings.";
+            return;
+        }
+        if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
+            pushStatus.textContent = "Push notifications are not supported on this browser.";
+            return;
+        }
+        const permission = await Notification.requestPermission();
+        if (permission !== "granted") {
+            pushStatus.textContent = "Notification permission was not granted.";
+            return;
+        }
+        const registration = await navigator.serviceWorker.ready;
+        const subscription = await registration.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: urlBase64ToUint8Array(vapidPublicKey),
+        });
+        const response = await fetch("{% url 'save_push_subscription' %}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": getCookie("csrftoken"),
+            },
+            body: JSON.stringify(subscription),
+        });
+        pushStatus.textContent = response.ok ? "Push reminders enabled on this device." : "Could not save push subscription.";
+    });
+</script>
+{% endblock %}

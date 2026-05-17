@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}{{ book.name }} | PrayerStreak PH{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+    <section class="card-surface p-6 sm:p-8">
+        <div class="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+            <div>
+                <p class="text-sm font-semibold uppercase tracking-wide" style="color:#8B6914">Bible reader</p>
+                <h1 class="mt-2 text-3xl font-extrabold text-ps-blue">{{ book.name }}</h1>
+                <p class="mt-4 max-w-3xl leading-8" style="color:#6B5B3E">{{ book.description }}</p>
+                <div style="margin-top:8px;">
+                    <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:#6B5B3E; margin-bottom:4px;">
+                        <span>{{ completed_count }} of {{ total_chapters }} chapters read</span>
+                        <span>{{ progress_percent }}%</span>
+                    </div>
+                    <div style="background:#EDE8DC; border-radius:4px; height:8px;">
+                        <div style="background:#8B6914; border-radius:4px; height:8px; width:{{ progress_percent }}%;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {% if completed_count > 0 and next_chapter %}
+        <div style="background:#1E3A5F; border-radius:12px; padding:1rem 1.25rem; display:flex; justify-content:space-between; align-items:center; gap:1rem; margin-bottom:1.5rem; color:white;">
+            <div>
+                <p style="font-size:0.8rem; opacity:0.7; margin-bottom:2px;">Continue reading</p>
+                <p style="font-weight:500;">Chapter {{ next_chapter.number }}{% if next_chapter.title %} - {{ next_chapter.title }}{% endif %}</p>
+            </div>
+            <a href="{{ next_chapter_url }}" style="background:#8B6914; color:white; padding:8px 20px; border-radius:20px; font-size:0.85rem; text-decoration:none;">
+                Read <i class="ti ti-arrow-right"></i>
+            </a>
+        </div>
+    {% endif %}
+
+    {% if messages %}
+        <div class="space-y-3">
+            {% for message in messages %}
+                <p class="rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm font-semibold text-green-800">{{ message }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <section class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {% for chapter in chapters %}
+            <a href="#chapter-{{ chapter.number }}" class="p-4 transition hover:border-[#8B6914]" style="position:relative; border-radius:12px; text-decoration:none; {% if chapter.number in completed_chapters %}background:#1E3A5F; border:1px solid #1E3A5F;{% elif chapter == next_chapter %}background:#FAEEDA; border:2px solid #8B6914;{% else %}background:#FDFAF4; border:1px solid #DDD5C0;{% endif %}">
+                {% if chapter.number in completed_chapters %}
+                    <i class="ti ti-check" style="position:absolute; top:12px; right:12px; color:#F0C040;"></i>
+                {% endif %}
+                <div class="flex items-center justify-between gap-3">
+                    <p class="font-bold" style="{% if chapter.number in completed_chapters %}color:white;{% else %}color:#1E3A5F;{% endif %}">Chapter {{ chapter.number }}</p>
+                </div>
+                {% if chapter.title %}
+                    <p class="mt-2 text-sm font-medium" style="{% if chapter.number in completed_chapters %}color:rgba(255,255,255,0.7);{% else %}color:#6B5B3E;{% endif %}">{{ chapter.title }}</p>
+                {% endif %}
+            </a>
+        {% endfor %}
+    </section>
+
+    <section class="space-y-6">
+        {% for chapter in chapters %}
+            <article id="chapter-{{ chapter.number }}" class="card-surface scroll-mt-8 p-6 sm:p-8">
+                <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                    <div>
+                        <p class="text-sm font-semibold uppercase tracking-wide" style="color:#8B6914">Scripture</p>
+                        <h2 class="mt-2 text-2xl font-extrabold text-ps-blue">Chapter {{ chapter.number }}</h2>
+                        {% if chapter.title %}
+                            <p class="mt-2 font-semibold" style="color:#6B5B3E">{{ chapter.title }}</p>
+                        {% endif %}
+                    </div>
+                    {% if chapter.id in completed_chapter_ids %}
+                        <span class="rounded-full px-4 py-2 text-sm font-bold text-green-700" style="background:#EDE8DC">Completed</span>
+                    {% else %}
+                        <form method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="chapter_id" value="{{ chapter.id }}">
+                            <button type="submit" class="btn-primary">
+                                Mark read
+                            </button>
+                        </form>
+                    {% endif %}
+                </div>
+                <div class="mt-6 whitespace-pre-line text-lg leading-9" style="font-family:'IM Fell English',serif;color:#2C2416">{{ chapter.text }}</div>
+            </article>
+        {% endfor %}
+    </section>
+</div>
+{% endblock %}

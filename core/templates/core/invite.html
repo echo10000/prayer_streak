@@ -4,67 +4,67 @@
 
 {% block content %}
 <div class="space-y-6">
-    <section class="rounded-2xl border border-amber-100 bg-white p-6 shadow-sm shadow-amber-100 sm:p-8">
+    <section class="card-surface p-6 sm:p-8">
         <div class="max-w-3xl">
-            <p class="text-sm font-semibold uppercase tracking-wide text-ps-gold">Invite friends</p>
-            <h1 class="mt-2 text-3xl font-extrabold text-ps-blue sm:text-4xl">Share PrayerStreak PH</h1>
-            <p class="mt-3 text-slate-600">Invite friends to build a daily prayer habit with you.</p>
+            <p class="text-sm font-semibold uppercase tracking-wide" style="color:#8B6914">Invite friends</p>
+            <h1 class="mt-2 text-3xl font-extrabold text-ps-blue sm:text-4xl" data-en="Invite a friend to pray with you" data-fil="Imbitahan ang isang kaibigan na manalangin kasama mo">Invite a friend to pray with you</h1>
+            <p class="mt-3" style="color:#6B5B3E">When a friend joins through your link, they start their prayer journey with a welcome bonus.</p>
         </div>
 
-        <div class="mt-6 rounded-xl border border-amber-100 bg-amber-50 p-4">
-            <label for="inviteLink" class="mb-2 block text-sm font-bold text-ps-blue">Your invite link</label>
+        <div class="mt-6 rounded-xl border border-[#DDD5C0] p-4" style="background:#EDE8DC">
+            <label for="inviteLink" class="mb-2 block text-sm font-bold text-ps-blue" data-en="Your invite link" data-fil="Ang iyong link ng imbitasyon">Your invite link</label>
             <div class="flex flex-col gap-3 sm:flex-row">
-                <input id="inviteLink" type="text" value="{{ invite_link }}" readonly class="w-full rounded-xl border border-amber-200 bg-white px-4 py-3 text-sm font-semibold text-ps-blue outline-none focus:border-ps-gold focus:ring-2 focus:ring-amber-100">
-                <button id="copyButton" type="button" class="rounded-xl bg-ps-gold px-5 py-3 text-sm font-bold text-white transition hover:bg-ps-blue">
-                    Copy
+                <input id="inviteLink" type="text" value="{{ invite_link }}" readonly class="w-full rounded-xl border border-[#DDD5C0] bg-[#FDFAF4] px-4 py-3 text-sm font-semibold text-ps-blue outline-none focus:border-ps-gold focus:ring-2 focus:ring-[#DDD5C0]">
+                <button id="copyButton" type="button" class="btn-primary">
+                    <span data-en="Copy" data-fil="Kopyahin">Copy</span>
                 </button>
             </div>
-            <p id="copyMessage" class="mt-2 hidden text-sm font-semibold text-green-700">Copied to clipboard!</p>
+            <p id="copyMessage" class="mt-2 hidden text-sm font-semibold text-green-700">Copied to clipboard.</p>
         </div>
 
         <div class="mt-5 flex flex-col gap-3 sm:flex-row">
             <a href="https://www.facebook.com/sharer/sharer.php?u={{ invite_link|urlencode }}" target="_blank" rel="noopener" class="inline-flex justify-center rounded-xl bg-[#1877F2] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#145dbf]">
-                Share on Facebook
+                <span data-en="Invite on Facebook" data-fil="Imbitahan sa Facebook">Invite on Facebook</span>
             </a>
             <a href="viber://forward?text={{ invite_link|urlencode }}" class="inline-flex justify-center rounded-xl bg-[#7360F2] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#5746c9]">
-                Share via Viber
+                <span data-en="Invite via Viber" data-fil="Imbitahan sa Viber">Invite via Viber</span>
             </a>
         </div>
     </section>
 
     <section class="grid gap-4 sm:grid-cols-2">
-        <div class="rounded-xl border border-amber-100 bg-white p-5 shadow-sm shadow-amber-100">
-            <p class="text-sm font-semibold text-slate-500">People referred</p>
+        <div class="stat-surface border border-[#DDD5C0] p-5">
+            <p class="text-sm font-semibold" style="color:#6B5B3E">People referred</p>
             <p class="mt-2 text-3xl font-extrabold text-ps-blue">{{ total_referrals }}</p>
         </div>
-        <div class="rounded-xl border border-amber-100 bg-white p-5 shadow-sm shadow-amber-100">
-            <p class="text-sm font-semibold text-slate-500">Referral points earned</p>
-            <p class="mt-2 text-3xl font-extrabold text-ps-blue">{{ total_referral_points }}</p>
+        <div class="stat-surface border border-[#DDD5C0] p-5">
+            <p class="text-sm font-semibold" style="color:#6B5B3E">Welcome bonuses shared</p>
+            <p class="mt-2 text-3xl font-extrabold text-ps-blue">{{ total_referrals }}</p>
         </div>
     </section>
 
-    <section class="rounded-xl border border-amber-100 bg-white p-6 shadow-sm shadow-amber-100">
-        <p class="text-sm font-semibold uppercase tracking-wide text-ps-gold">How it works</p>
+    <section class="card-surface p-6">
+        <p class="text-sm font-semibold uppercase tracking-wide" style="color:#8B6914">How it works</p>
         <div class="mt-5 grid gap-4 md:grid-cols-3">
-            <div class="rounded-xl bg-amber-50 p-4">
-                <p class="text-sm font-extrabold text-ps-gold">Step 1</p>
+            <div class="stat-surface p-4">
+                <p class="text-sm font-extrabold" style="color:#8B6914">Step 1</p>
                 <h2 class="mt-1 font-bold text-ps-blue">Share your link</h2>
             </div>
-            <div class="rounded-xl bg-amber-50 p-4">
-                <p class="text-sm font-extrabold text-ps-gold">Step 2</p>
+            <div class="stat-surface p-4">
+                <p class="text-sm font-extrabold" style="color:#8B6914">Step 2</p>
                 <h2 class="mt-1 font-bold text-ps-blue">Friend signs up</h2>
             </div>
-            <div class="rounded-xl bg-amber-50 p-4">
-                <p class="text-sm font-extrabold text-ps-gold">Step 3</p>
-                <h2 class="mt-1 font-bold text-ps-blue">You earn 100 points</h2>
+            <div class="stat-surface p-4">
+                <p class="text-sm font-extrabold" style="color:#8B6914">Step 3</p>
+                <h2 class="mt-1 font-bold text-ps-blue">They begin with a welcome bonus</h2>
             </div>
         </div>
     </section>
 
-    <section class="rounded-xl border border-amber-100 bg-white p-6 shadow-sm shadow-amber-100">
+    <section class="card-surface p-6">
         <div class="mb-5 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
             <div>
-                <p class="text-sm font-semibold uppercase tracking-wide text-ps-gold">Recent referrals</p>
+                <p class="text-sm font-semibold uppercase tracking-wide" style="color:#8B6914">Recent referrals</p>
                 <h2 class="mt-1 text-2xl font-extrabold text-ps-blue">Last 10 friends</h2>
             </div>
         </div>
@@ -72,22 +72,24 @@
         <div class="overflow-x-auto">
             <table class="w-full min-w-[520px] text-left text-sm">
                 <thead>
-                    <tr class="border-b border-amber-100 text-slate-500">
+                    <tr class="border-b border-[#DDD5C0]" style="color:#6B5B3E">
                         <th class="py-3 pr-4 font-bold">Username</th>
                         <th class="py-3 pr-4 font-bold">Date joined</th>
-                        <th class="py-3 font-bold">Points</th>
+                        <th class="py-3 font-bold">Welcome bonus</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-amber-50">
+                <tbody class="divide-y divide-[#DDD5C0]">
                     {% for referral in recent_referrals %}
                         <tr>
                             <td class="py-3 pr-4 font-semibold text-ps-blue">{{ referral.referred_user.username }}</td>
-                            <td class="py-3 pr-4 text-slate-600">{{ referral.referred_user.date_joined|date:"M d, Y" }}</td>
-                            <td class="py-3 font-semibold text-ps-gold">{{ referral.points_awarded }}</td>
+                            <td class="py-3 pr-4" style="color:#6B5B3E">{{ referral.referred_user.date_joined|date:"M d, Y" }}</td>
+                            <td class="py-3 font-semibold" style="color:#8B6914">Shared</td>
                         </tr>
                     {% empty %}
                         <tr>
-                            <td colspan="3" class="py-6 text-center font-medium text-slate-500">No referrals yet.</td>
+                            <td colspan="3">
+                                <p style="text-align:center; padding:1.5rem; color:#6B5B3E;">No friends invited yet. Share your link to get started.</p>
+                            </td>
                         </tr>
                     {% endfor %}
                 </tbody>

@@ -4,19 +4,19 @@
 
 {% block content %}
 <div class="space-y-8">
-    <section class="overflow-hidden rounded-2xl border border-amber-100 bg-gradient-to-br from-ps-blue via-[#254b78] to-[#6b5524] text-white shadow-sm">
+    <section class="overflow-hidden rounded-2xl border border-[#DDD5C0] bg-gradient-to-br from-ps-blue via-[#254b78] to-[#6b5524] text-white">
         <div class="grid gap-6 p-6 sm:p-8 lg:grid-cols-[1.15fr_0.85fr]">
             <div>
-                <p class="text-sm font-semibold uppercase tracking-wide text-amber-200">Be still and pray</p>
+                <p class="text-sm font-semibold uppercase tracking-wide" style="color:#F0C040">Be still and pray</p>
                 <h1 class="mt-3 text-3xl font-extrabold leading-tight sm:text-4xl">
                     Your daily rhythm with God
                 </h1>
-                <p class="mt-4 max-w-2xl leading-7 text-amber-50">
+                <p class="mt-4 max-w-2xl leading-7 text-[#FAEEDA]">
                     Read Scripture, reflect slowly, pray honestly, and write what God is placing on your heart today.
                 </p>
             </div>
-            <div class="rounded-2xl border border-white/15 bg-white/10 p-5">
-                <p class="text-sm font-semibold text-amber-100">Today's practice</p>
+            <div class="rounded-xl border border-white/15 bg-white/10 p-5">
+                <p class="text-sm font-semibold text-[#FAEEDA]">Today's practice</p>
                 <ol class="mt-4 space-y-3 text-sm font-medium text-white">
                     <li>1. Read God's Word</li>
                     <li>2. Sit with the reflection</li>
@@ -27,24 +27,24 @@
         </div>
     </section>
 
-    <section class="rounded-2xl border border-amber-100 bg-white p-6 shadow-sm shadow-amber-100 sm:p-8">
+    <section class="card-surface p-6 sm:p-8">
         <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div>
-                <p class="text-sm font-semibold uppercase tracking-wide text-ps-gold">Today's devotion</p>
+                <p class="text-sm font-semibold uppercase tracking-wide" style="color:#8B6914" data-en="Today's Devotion" data-fil="Debosyon Ngayon">Today's Devotion</p>
                 <h2 class="mt-2 text-3xl font-extrabold text-ps-blue">
                     {% if devotional %}{{ devotional.title }}{% else %}The Lord Is Near{% endif %}
                 </h2>
                 {% if devotional and devotional.season %}
-                    <p class="mt-2 text-sm font-semibold text-slate-500">{{ devotional.season }}</p>
+                    <p class="mt-2 text-sm font-semibold" style="color:#6B5B3E">{{ devotional.season }}</p>
                 {% endif %}
             </div>
-            <p class="rounded-full bg-amber-50 px-3 py-1 text-sm font-semibold text-ps-blue">{{ today|date:"M d, Y" }}</p>
+            <p class="rounded-full px-3 py-1 text-sm font-semibold text-ps-blue" style="background:#EDE8DC">{{ today|date:"M d, Y" }}</p>
         </div>
 
         <div class="mt-6 grid gap-5 lg:grid-cols-[0.95fr_1.05fr]">
-            <div class="rounded-2xl border-2 border-ps-gold bg-amber-50 p-5">
-                <p class="text-sm font-bold uppercase tracking-wide text-ps-gold">Scripture</p>
-                <blockquote class="mt-3 text-2xl font-extrabold leading-relaxed text-ps-blue">
+            <div style="background:#FAEEDA;border-left:3px solid #8B6914;border-radius:0 8px 8px 0;padding:1rem 1.25rem">
+                <p class="text-sm font-bold uppercase tracking-wide" style="color:#8B6914" data-en="Scripture" data-fil="Talata">Scripture</p>
+                <blockquote class="verse-text mt-3">
                     {% if devotional %}
                         "{{ devotional.scripture_text }}"
                     {% elif daily_verse %}
@@ -53,7 +53,7 @@
                         "{{ fallback_verse_text }}"
                     {% endif %}
                 </blockquote>
-                <p class="mt-4 text-sm font-bold text-slate-600">
+                <p class="verse-reference">
                     {% if devotional %}
                         {{ devotional.scripture_reference }}
                     {% elif daily_verse %}
@@ -64,57 +64,77 @@
                 </p>
             </div>
 
-            <div class="rounded-2xl border border-amber-100 bg-white p-5 shadow-sm">
-                <p class="text-sm font-bold uppercase tracking-wide text-ps-gold">Reflection</p>
-                <p class="mt-3 leading-8 text-slate-700">
+            <div class="card-surface p-5">
+                <p class="text-sm font-bold uppercase tracking-wide" style="color:#8B6914" data-en="Reflection" data-fil="Pagninilay">Reflection</p>
+                <p class="mt-3 leading-8" style="color:#6B5B3E">
                     {% if devotional %}{{ devotional.reflection }}{% else %}{{ fallback_reflection }}{% endif %}
                 </p>
             </div>
         </div>
 
         <div class="mt-5 grid gap-5 md:grid-cols-2">
-            <div class="rounded-2xl bg-[#f8faf7] p-5">
-                <p class="text-sm font-bold uppercase tracking-wide text-ps-gold">Prayer prompt</p>
+            <div class="stat-surface p-5">
+                <p class="text-sm font-bold uppercase tracking-wide" style="color:#8B6914" data-en="Prayer Prompt" data-fil="Gabay sa Panalangin">Prayer Prompt</p>
                 <p class="mt-3 leading-7 text-ps-blue">
                     {% if devotional %}{{ devotional.prayer_prompt }}{% else %}{{ fallback_prayer_prompt }}{% endif %}
                 </p>
             </div>
-            <div class="rounded-2xl bg-[#f8faf7] p-5">
-                <p class="text-sm font-bold uppercase tracking-wide text-ps-gold">Journal question</p>
+            <div class="stat-surface p-5">
+                <p class="text-sm font-bold uppercase tracking-wide" style="color:#8B6914" data-en="Journal Question" data-fil="Tanong sa Journal">Journal Question</p>
                 <p class="mt-3 leading-7 text-ps-blue">
                     {% if devotional %}{{ devotional.journal_prompt }}{% else %}{{ fallback_journal_prompt }}{% endif %}
                 </p>
             </div>
         </div>
+        <div id="verse-data" data-verse="{{ today_verse_text|escapejs }}" data-reference="{{ today_verse_reference|escapejs }}" data-date="{{ today|date:'F d, Y' }}"></div>
+        <div class="mt-5">
+            <button id="share-verse-btn" type="button" class="btn-primary"><i class="ti ti-share"></i> Share this verse</button>
+            <div id="verse-preview" class="mt-4 hidden rounded-xl border border-[#DDD5C0] p-4" style="background:#EDE8DC">
+                <div id="verse-preview-canvas" class="flex justify-center"></div>
+                <div class="mt-4 flex flex-wrap justify-center gap-3">
+                    <button id="download-verse-btn" type="button" class="btn-primary btn-sm">Download PNG</button>
+                    <button type="button" onclick="window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(window.location.origin), '_blank')" class="btn-secondary btn-sm">Share to Facebook</button>
+                    <button type="button" onclick="document.getElementById('verse-preview').classList.add('hidden')" class="btn-secondary btn-sm">Close preview</button>
+                </div>
+            </div>
+        </div>
     </section>
 
-    <section class="rounded-2xl border border-amber-100 bg-white p-6 shadow-sm shadow-amber-100 sm:p-8">
+    <section class="card-surface p-6 sm:p-8">
         <div class="mb-5">
-            <p class="text-sm font-semibold uppercase tracking-wide text-ps-gold">Prayer journal</p>
-            <h2 class="mt-2 text-2xl font-extrabold text-ps-blue">Write today's prayer</h2>
+            <p class="text-sm font-semibold uppercase tracking-wide" style="color:#8B6914">Prayer journal</p>
+            <h2 class="mt-2 text-2xl font-extrabold text-ps-blue" data-en="Write today's prayer" data-fil="Isulat ang panalangin ngayon">Write today's prayer</h2>
         </div>
 
         {% if prayer_log %}
-            <div class="rounded-2xl border border-green-100 bg-green-50 p-5">
-                <p class="mb-3 text-sm font-bold text-green-700">Already prayed today &#9989;</p>
+            <div class="rounded-xl border border-[#DDD5C0] p-5" style="background:#EDE8DC">
+                <p class="mb-3 text-sm font-bold text-green-700"><span data-en="Already prayed today" data-fil="Nakapagdasal na ngayon">Already prayed today</span> <i class="ti ti-circle-check" aria-hidden="true"></i></p>
                 <p class="text-sm font-semibold uppercase tracking-wide text-green-700">{{ prayer_log.get_category_display }}</p>
                 <p class="mt-3 whitespace-pre-line leading-8 text-ps-blue">{{ prayer_log.content }}</p>
             </div>
         {% else %}
             <form method="post" class="space-y-5">
                 {% csrf_token %}
+                <div style="text-align:center; padding:2rem; color:#6B5B3E;">
+                    <i class="ti ti-book" style="font-size:2.5rem; color:#8B6914; display:block; margin-bottom:12px;"></i>
+                    <p style="font-size:1rem; margin-bottom:4px;">Your prayer story begins today.</p>
+                    <p style="font-size:0.85rem; color:#8B6914;">Write what's on your heart below.</p>
+                </div>
+                {% if senior_mode %}
+                    <button type="submit" formaction="{% url 'simple_pray' %}" class="btn-primary w-full" style="min-height:60px;font-size:1.2rem">I prayed today</button>
+                {% endif %}
                 <div>
                     <label for="category" class="mb-2 block text-sm font-semibold text-ps-blue">Prayer focus</label>
-                    <select id="category" name="category" class="w-full rounded-xl border border-amber-100 px-4 py-3 text-ps-blue outline-none transition focus:border-ps-gold focus:ring-2 focus:ring-amber-100">
+                    <select id="category" name="category" class="w-full rounded-xl border border-[#DDD5C0] bg-[#FDFAF4] px-4 py-3 text-ps-blue outline-none transition focus:border-ps-gold focus:ring-2 focus:ring-[#DDD5C0]">
                         {% for value, label in prayer_categories %}
                             <option value="{{ value }}">{{ label }}</option>
                         {% endfor %}
                     </select>
                 </div>
 
-                <div class="rounded-2xl border border-amber-100 bg-amber-50 p-4">
+                <div class="rounded-xl border border-[#DDD5C0] p-4" style="background:#EDE8DC">
                     <p class="text-sm font-bold text-ps-blue">Guided prayer</p>
-                    <div class="mt-3 grid gap-3 text-sm text-slate-700 sm:grid-cols-2">
+                    <div class="mt-3 grid gap-3 text-sm sm:grid-cols-2" style="color:#6B5B3E">
                         <p>Lord, thank You for...</p>
                         <p>Forgive me for...</p>
                         <p>Please help me with...</p>
@@ -124,32 +144,274 @@
 
                 <div>
                     <label for="content" class="mb-2 block text-sm font-semibold text-ps-blue">Your prayer</label>
-                    <textarea id="content" name="content" rows="9" required class="w-full resize-none rounded-xl border border-amber-100 px-4 py-3 text-ps-blue outline-none transition placeholder:text-slate-400 focus:border-ps-gold focus:ring-2 focus:ring-amber-100" placeholder="Lord, today I come before You..."></textarea>
+                    <textarea id="content" name="content" maxlength="1000" rows="9" required class="w-full resize-none rounded-xl border border-[#DDD5C0] bg-[#FDFAF4] px-4 py-3 text-ps-blue outline-none transition placeholder:text-[#6B5B3E] focus:border-ps-gold focus:ring-2 focus:ring-[#DDD5C0]" style="{% if senior_mode %}min-height:200px{% endif %}" placeholder="Lord, today I come before You..."></textarea>
+                    <p id="prayer-counter" class="mt-2 text-sm font-semibold" style="color:#6B5B3E">0 / 1000 characters</p>
                 </div>
-                <button type="submit" class="w-full rounded-xl bg-ps-gold px-5 py-3 font-bold text-white transition hover:bg-ps-blue sm:w-auto">
-                    Close with Amen
+                <div class="grid gap-5 sm:grid-cols-2">
+                    <div>
+                        <label for="verse_reference" class="mb-2 block text-sm font-semibold text-ps-blue">Verse reference</label>
+                        <input id="verse_reference" name="verse_reference" class="w-full rounded-xl border border-[#DDD5C0] bg-[#FDFAF4] px-4 py-3 text-ps-blue outline-none transition focus:border-ps-gold focus:ring-2 focus:ring-[#DDD5C0]" placeholder="Psalm 145:18">
+                    </div>
+                    <div>
+                        <label for="verse_tags" class="mb-2 block text-sm font-semibold text-ps-blue">Verse tags</label>
+                        <input id="verse_tags" name="verse_tags" class="w-full rounded-xl border border-[#DDD5C0] bg-[#FDFAF4] px-4 py-3 text-ps-blue outline-none transition focus:border-ps-gold focus:ring-2 focus:ring-[#DDD5C0]" placeholder="gratitude, guidance">
+                    </div>
+                </div>
+                <button type="submit" class="btn-primary w-full sm:w-auto">
+                    <span data-en="Submit prayer" data-fil="Isumite ang panalangin">Submit prayer</span>
                 </button>
             </form>
         {% endif %}
     </section>
 
-    <section class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <div class="rounded-xl border border-amber-100 bg-white p-5 shadow-sm shadow-amber-100">
-            <p class="text-sm font-semibold text-slate-500">Prayer rhythm</p>
+    <section class="grid gap-4 sm:grid-cols-2 {% if not senior_mode %}lg:grid-cols-4{% endif %}">
+        <div class="stat-surface border border-[#DDD5C0] p-5">
+            <p class="text-sm font-semibold" style="color:#6B5B3E" data-en="Days in prayer" data-fil="Araw ng panalangin">Days in prayer</p>
             <p class="mt-2 text-3xl font-extrabold text-ps-blue">{{ user.streak }} days</p>
         </div>
-        <div class="rounded-xl border border-amber-100 bg-white p-5 shadow-sm shadow-amber-100">
-            <p class="text-sm font-semibold text-slate-500">Encouragement points</p>
-            <p class="mt-2 text-3xl font-extrabold text-ps-blue">{{ user.points }}</p>
+        <div class="stat-surface border border-[#DDD5C0] p-5">
+            <p class="text-sm font-semibold" style="color:#6B5B3E" data-en="Prayers written" data-fil="Mga panalanging isinulat">Prayers written</p>
+            <p class="mt-2 text-3xl font-extrabold text-ps-blue">{{ prayers_written }}</p>
         </div>
-        <div class="rounded-xl border border-amber-100 bg-white p-5 shadow-sm shadow-amber-100">
-            <p class="text-sm font-semibold text-slate-500">Community rank</p>
-            <p class="mt-2 text-3xl font-extrabold text-ps-blue">#{{ rank }}</p>
+        <div class="stat-surface border border-[#DDD5C0] p-5 {% if senior_mode %}hidden{% endif %}">
+            <p class="text-sm font-semibold" style="color:#6B5B3E" data-en="Answered prayers" data-fil="Mga sinagot na panalangin">Answered prayers</p>
+            <p class="mt-2 text-3xl font-extrabold text-ps-blue">{{ answered_count }}</p>
         </div>
-        <div class="rounded-xl border border-amber-100 bg-white p-5 shadow-sm shadow-amber-100">
-            <p class="text-sm font-semibold text-slate-500">Friends invited</p>
+        <div class="stat-surface border border-[#DDD5C0] p-5 {% if senior_mode %}hidden{% endif %}">
+            <p class="text-sm font-semibold" style="color:#6B5B3E" data-en="Praying for others" data-fil="Nagdarasal para sa iba">Praying for others</p>
             <p class="mt-2 text-3xl font-extrabold text-ps-blue">{{ total_referrals }}</p>
         </div>
     </section>
+
+    <section class="card-surface p-6 sm:p-8">
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+                <p class="text-sm font-semibold uppercase tracking-wide" style="color:#8B6914">Consistency</p>
+                <h2 class="mt-2 text-2xl font-extrabold text-ps-blue">Prayer heatmap and stats</h2>
+                <p class="mt-2" style="color:#6B5B3E">A gentle view of rhythm, not pressure.</p>
+            </div>
+            <a href="{% url 'export_journal_csv' %}" class="rounded-xl border px-5 py-3 text-center text-sm font-bold transition" style="border-color:#8B6914;color:#8B6914">
+                Export journal CSV
+            </a>
+        </div>
+        <div class="mt-6 grid gap-1" style="grid-template-columns:repeat(14,minmax(0,1fr));">
+            {% for day in prayer_stats.heatmap_days %}
+                <div title="{{ day.date|date:'M d, Y' }}" class="aspect-square rounded-sm" style="background:{% if day.prayed %}#8B6914{% else %}#DDD5C0{% endif %}"></div>
+            {% endfor %}
+        </div>
+        <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div class="stat-surface border border-[#DDD5C0] p-4">
+                <p class="text-sm font-semibold" style="color:#6B5B3E">Longest streak</p>
+                <p class="mt-2 text-2xl font-extrabold text-ps-blue">{{ prayer_stats.longest_streak }} days</p>
+            </div>
+            <div class="stat-surface border border-[#DDD5C0] p-4">
+                <p class="text-sm font-semibold" style="color:#6B5B3E">Total prayer days</p>
+                <p class="mt-2 text-2xl font-extrabold text-ps-blue">{{ prayer_stats.total_prayer_days }}</p>
+            </div>
+            <div class="stat-surface border border-[#DDD5C0] p-4">
+                <p class="text-sm font-semibold" style="color:#6B5B3E">Missed days this month</p>
+                <p class="mt-2 text-2xl font-extrabold text-ps-blue">{{ prayer_stats.missed_days }}</p>
+            </div>
+            <div class="stat-surface border border-[#DDD5C0] p-4">
+                <p class="text-sm font-semibold" style="color:#6B5B3E">Best month</p>
+                <p class="mt-2 text-2xl font-extrabold text-ps-blue">{{ prayer_stats.best_month_days }} days</p>
+                <p class="text-sm" style="color:#6B5B3E">{{ prayer_stats.best_month_name }}</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="grid gap-6 lg:grid-cols-3">
+        <div class="card-surface p-6">
+            <p class="text-sm font-semibold uppercase tracking-wide" style="color:#8B6914">Pray for this today</p>
+            <p class="mt-3 leading-7 text-ps-blue">{{ prayer_stats.rotating_prompt }}</p>
+        </div>
+        <div class="card-surface p-6">
+            <div class="flex items-center justify-between gap-3">
+                <p class="text-sm font-semibold uppercase tracking-wide" style="color:#8B6914">Reminders</p>
+                <a href="{% url 'settings' %}" class="text-sm font-bold hover:underline" style="color:#8B6914">Edit</a>
+            </div>
+            <div class="mt-4 space-y-3">
+                {% for reminder in reminders %}
+                    <p class="rounded-xl px-4 py-3 text-sm font-semibold text-ps-blue" style="background:#EDE8DC">{{ reminder.get_routine_display }} at {{ reminder.time|time:"g:i A" }}</p>
+                {% empty %}
+                    <p class="text-sm" style="color:#6B5B3E">No reminders yet. Add a morning or evening rhythm.</p>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="card-surface p-6">
+            <p class="text-sm font-semibold uppercase tracking-wide" style="color:#8B6914">Prayer plan</p>
+            {% if active_plan %}
+                <p class="mt-3 font-bold text-ps-blue">{{ active_plan.plan.title }}</p>
+                <p class="mt-1 text-sm" style="color:#6B5B3E">Day {{ active_plan.current_day }} of {{ active_plan.plan.days }}</p>
+            {% elif featured_plan %}
+                <p class="mt-3 font-bold text-ps-blue">{{ featured_plan.title }}</p>
+                <form method="post" action="{% url 'start_prayer_plan' featured_plan.pk %}" class="mt-4">
+                    {% csrf_token %}
+                    <button class="btn-primary btn-sm">Start plan</button>
+                </form>
+            {% else %}
+                <p class="mt-3 text-sm" style="color:#6B5B3E">Prayer plans can be added from the admin dashboard.</p>
+            {% endif %}
+        </div>
+    </section>
+
+    <section class="grid gap-6 lg:grid-cols-2">
+        <div class="card-surface p-6">
+            <p class="text-sm font-semibold uppercase tracking-wide" style="color:#8B6914">Active requests</p>
+            <div class="mt-4 space-y-3">
+                {% for request_item in active_requests %}
+                    <p class="rounded-xl px-4 py-3 text-sm leading-6 text-ps-blue" style="background:#EDE8DC">{{ request_item.content|truncatechars:130 }}</p>
+                {% empty %}
+                    <p class="text-sm" style="color:#6B5B3E">No active requests yet.</p>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="card-surface p-6">
+            <p class="text-sm font-semibold uppercase tracking-wide" style="color:#8B6914">Recent answered prayers</p>
+            <div class="mt-4 space-y-3">
+                {% for request_item in recent_answered_requests %}
+                    <p class="rounded-xl px-4 py-3 text-sm leading-6 text-ps-blue" style="background:#EDE8DC">{{ request_item.testimony_notes|default:request_item.content|truncatechars:130 }}</p>
+                {% empty %}
+                    <p class="text-sm" style="color:#6B5B3E">Answered requests and testimonies will appear here.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    {% if bible_progress %}
+        <section class="card-surface p-6 sm:p-8">
+            <div class="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+                <div>
+                    <p class="text-sm font-semibold uppercase tracking-wide" style="color:#8B6914">Bible reading</p>
+                    <h2 class="mt-2 text-2xl font-extrabold text-ps-blue">{{ bible_progress.book.name }}</h2>
+                    <p class="mt-3 max-w-2xl leading-7" style="color:#6B5B3E">
+                        {{ bible_progress.completed_count }} of {{ bible_progress.total_chapters }} chapters completed.
+                    </p>
+                    <div class="mt-4 h-3 overflow-hidden rounded-full" style="background:#EDE8DC">
+                        <div class="h-full rounded-full" style="width:{{ bible_progress.percent }}%;background:#8B6914"></div>
+                    </div>
+                </div>
+                <div class="flex flex-col gap-3 sm:flex-row">
+                    {% if next_bible_chapter %}
+                        <a href="{% url 'bible_book' bible_progress.book.abbreviation %}#chapter-{{ next_bible_chapter.number }}" class="rounded-xl px-5 py-3 text-center font-bold text-white transition" style="background:#1E3A5F">
+                            Continue chapter {{ next_bible_chapter.number }}
+                        </a>
+                    {% endif %}
+                    <a href="{% url 'bible_book' bible_progress.book.abbreviation %}" class="rounded-xl border px-5 py-3 text-center font-bold transition" style="border-color:#8B6914;color:#8B6914">
+                        View book
+                    </a>
+                </div>
+            </div>
+        </section>
+    {% endif %}
+
+    <section class="card-surface p-6 sm:p-8">
+        <div class="mb-5">
+            <p class="text-sm font-semibold uppercase tracking-wide" style="color:#8B6914">Past prayers</p>
+            <h2 class="mt-2 text-2xl font-extrabold text-ps-blue">Your recent journal entries</h2>
+        </div>
+
+        <div class="space-y-4">
+            {% for entry in recent_prayers %}
+                <article class="rounded-xl border border-[#DDD5C0] p-5" style="background:#FDFAF4">
+                    <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                        <div>
+                            <p class="text-sm font-bold uppercase tracking-wide" style="color:#8B6914">{{ entry.get_category_display }}</p>
+                            <p class="mt-1 text-sm font-semibold" style="color:#6B5B3E">{{ entry.date|date:"M d, Y" }}</p>
+                        </div>
+                        {% if not entry.is_answered %}
+                            <form method="post" action="{% url 'mark_answered' entry.pk %}">
+                                {% csrf_token %}
+                                <input name="testimony_notes" class="mb-2 w-full rounded-xl border border-[#DDD5C0] bg-[#FDFAF4] px-3 py-2 text-xs text-ps-blue outline-none" placeholder="Optional testimony note">
+                                <button type="submit" class="btn-secondary btn-sm">
+                                    <span data-en="Mark as answered" data-fil="Markahan bilang sinagot">Mark as answered</span>
+                                </button>
+                            </form>
+                        {% else %}
+                            <span class="rounded-full px-3 py-1 text-xs font-bold text-green-700" style="background:#EDE8DC">Answered</span>
+                        {% endif %}
+                    </div>
+                    <p class="mt-4 whitespace-pre-line leading-8 text-ps-blue">{{ entry.content }}</p>
+                </article>
+            {% empty %}
+                <p class="rounded-xl p-5 text-center font-medium" style="background:#EDE8DC;color:#6B5B3E">No prayer entries yet.</p>
+            {% endfor %}
+        </div>
+    </section>
 </div>
+<script>
+    const prayerTextarea = document.getElementById("content");
+    const prayerCounter = document.getElementById("prayer-counter");
+    if (prayerTextarea && prayerCounter) {
+        prayerTextarea.addEventListener("input", function() {
+            const remaining = 1000 - prayerTextarea.value.length;
+            prayerCounter.textContent = prayerTextarea.value.length + " / 1000 characters";
+            prayerCounter.style.color = remaining <= 0 ? "#A32D2D" : remaining < 100 ? "#8B6914" : "#6B5B3E";
+        });
+    }
+
+    let verseCanvas;
+    function wrapText(ctx, text, maxWidth) {
+        const words = text.split(" ");
+        const lines = [];
+        let line = "";
+        words.forEach(word => {
+            const test = line ? line + " " + word : word;
+            if (ctx.measureText(test).width > maxWidth && line) {
+                lines.push(line);
+                line = word;
+            } else {
+                line = test;
+            }
+        });
+        if (line) lines.push(line);
+        return lines;
+    }
+    document.getElementById("share-verse-btn")?.addEventListener("click", function() {
+        const data = document.getElementById("verse-data").dataset;
+        verseCanvas = document.createElement("canvas");
+        verseCanvas.width = 1080;
+        verseCanvas.height = 1080;
+        const ctx = verseCanvas.getContext("2d");
+        ctx.fillStyle = "#1E3A5F";
+        ctx.fillRect(0, 0, 1080, 1080);
+        ctx.strokeStyle = "#8B6914";
+        ctx.lineWidth = 4;
+        ctx.strokeRect(40, 40, 1000, 1000);
+        ctx.fillStyle = "#8B6914";
+        ctx.fillRect(530, 120, 20, 90);
+        ctx.fillRect(495, 155, 90, 20);
+        ctx.font = "italic 36px Georgia, serif";
+        ctx.fillStyle = "white";
+        ctx.textAlign = "center";
+        const lines = wrapText(ctx, '"' + data.verse + '"', 820);
+        const startY = 500 - (lines.length * 26);
+        lines.forEach((line, index) => ctx.fillText(line, 540, startY + index * 54));
+        ctx.font = "24px Arial, sans-serif";
+        ctx.fillStyle = "#F0C040";
+        ctx.fillText("- " + data.reference, 540, startY + lines.length * 54 + 45);
+        ctx.font = "18px Arial, sans-serif";
+        ctx.fillStyle = "rgba(255,255,255,.6)";
+        ctx.fillText("PrayerStreak PH | prayerstreakph.com", 540, 970);
+        const preview = document.getElementById("verse-preview-canvas");
+        preview.innerHTML = "";
+        const img = new Image();
+        img.src = verseCanvas.toDataURL("image/png");
+        img.style.maxWidth = "300px";
+        img.style.width = "100%";
+        preview.appendChild(img);
+        document.getElementById("verse-preview").classList.remove("hidden");
+    });
+    document.getElementById("download-verse-btn")?.addEventListener("click", function() {
+        if (!verseCanvas) return;
+        verseCanvas.toBlob(blob => {
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = "verse-" + document.getElementById("verse-data").dataset.date.replaceAll(" ", "-") + ".png";
+            link.click();
+            URL.revokeObjectURL(url);
+        });
+    });
+</script>
 {% endblock %}

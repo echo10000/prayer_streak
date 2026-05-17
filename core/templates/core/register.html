@@ -4,15 +4,15 @@
 
 {% block content %}
 <section class="mx-auto max-w-md">
-    <div class="rounded-2xl border border-amber-100 bg-white p-6 shadow-lg shadow-amber-100/60 sm:p-8">
+    <div class="card-surface p-6 sm:p-8">
         <div class="mb-6 text-center">
-            <p class="text-sm font-semibold uppercase tracking-wide text-ps-gold">Start your journey</p>
+            <p class="text-sm font-semibold uppercase tracking-wide" style="color:#8B6914">Start your journey</p>
             <h1 class="mt-2 text-3xl font-extrabold text-ps-blue">Create your account</h1>
         </div>
 
         {% if has_referral %}
-            <div class="mb-5 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-medium text-ps-blue">
-                You were invited by a friend!
+            <div class="mb-5 rounded-xl border border-[#DDD5C0] px-4 py-3 text-sm font-medium text-ps-blue" style="background:#EDE8DC">
+                You were invited by a friend.
             </div>
         {% endif %}
 
@@ -30,7 +30,7 @@
 
             <div>
                 <label for="{{ form.username.id_for_label }}" class="mb-2 block text-sm font-semibold text-ps-blue">Username</label>
-                <input type="text" name="{{ form.username.html_name }}" id="{{ form.username.id_for_label }}" value="{{ form.username.value|default:'' }}" required class="w-full rounded-xl border border-amber-100 px-4 py-3 text-ps-blue outline-none ring-0 transition focus:border-ps-gold focus:ring-2 focus:ring-amber-100">
+                <input type="text" name="{{ form.username.html_name }}" id="{{ form.username.id_for_label }}" value="{{ form.username.value|default:'' }}" required class="w-full rounded-xl border border-[#DDD5C0] bg-[#FDFAF4] px-4 py-3 text-ps-blue outline-none ring-0 transition focus:border-ps-gold focus:ring-2 focus:ring-[#DDD5C0]">
                 {% if form.username.errors %}
                     <p class="mt-2 text-sm text-red-600">{{ form.username.errors|striptags }}</p>
                 {% endif %}
@@ -38,7 +38,7 @@
 
             <div>
                 <label for="{{ form.email.id_for_label }}" class="mb-2 block text-sm font-semibold text-ps-blue">Email</label>
-                <input type="email" name="{{ form.email.html_name }}" id="{{ form.email.id_for_label }}" value="{{ form.email.value|default:'' }}" required class="w-full rounded-xl border border-amber-100 px-4 py-3 text-ps-blue outline-none ring-0 transition focus:border-ps-gold focus:ring-2 focus:ring-amber-100">
+                <input type="email" name="{{ form.email.html_name }}" id="{{ form.email.id_for_label }}" value="{{ form.email.value|default:'' }}" required class="w-full rounded-xl border border-[#DDD5C0] bg-[#FDFAF4] px-4 py-3 text-ps-blue outline-none ring-0 transition focus:border-ps-gold focus:ring-2 focus:ring-[#DDD5C0]">
                 {% if form.email.errors %}
                     <p class="mt-2 text-sm text-red-600">{{ form.email.errors|striptags }}</p>
                 {% endif %}
@@ -46,7 +46,7 @@
 
             <div>
                 <label for="{{ form.password1.id_for_label }}" class="mb-2 block text-sm font-semibold text-ps-blue">Password</label>
-                <input type="password" name="{{ form.password1.html_name }}" id="{{ form.password1.id_for_label }}" required class="w-full rounded-xl border border-amber-100 px-4 py-3 text-ps-blue outline-none ring-0 transition focus:border-ps-gold focus:ring-2 focus:ring-amber-100">
+                <input type="password" name="{{ form.password1.html_name }}" id="{{ form.password1.id_for_label }}" required class="w-full rounded-xl border border-[#DDD5C0] bg-[#FDFAF4] px-4 py-3 text-ps-blue outline-none ring-0 transition focus:border-ps-gold focus:ring-2 focus:ring-[#DDD5C0]">
                 {% if form.password1.errors %}
                     <p class="mt-2 text-sm text-red-600">{{ form.password1.errors|striptags }}</p>
                 {% endif %}
@@ -54,20 +54,20 @@
 
             <div>
                 <label for="{{ form.password2.id_for_label }}" class="mb-2 block text-sm font-semibold text-ps-blue">Confirm password</label>
-                <input type="password" name="{{ form.password2.html_name }}" id="{{ form.password2.id_for_label }}" required class="w-full rounded-xl border border-amber-100 px-4 py-3 text-ps-blue outline-none ring-0 transition focus:border-ps-gold focus:ring-2 focus:ring-amber-100">
+                <input type="password" name="{{ form.password2.html_name }}" id="{{ form.password2.id_for_label }}" required class="w-full rounded-xl border border-[#DDD5C0] bg-[#FDFAF4] px-4 py-3 text-ps-blue outline-none ring-0 transition focus:border-ps-gold focus:ring-2 focus:ring-[#DDD5C0]">
                 {% if form.password2.errors %}
                     <p class="mt-2 text-sm text-red-600">{{ form.password2.errors|striptags }}</p>
                 {% endif %}
             </div>
 
-            <button type="submit" class="w-full rounded-xl bg-ps-gold px-5 py-3 font-bold text-white transition hover:bg-ps-blue">
+            <button type="submit" class="btn-primary w-full">
                 Register
             </button>
         </form>
 
         <p class="mt-6 text-center text-sm text-ps-blue">
             Already have an account?
-            <a href="{% url 'login' %}" class="font-bold text-ps-gold hover:text-ps-blue">Login</a>
+            <a href="{% url 'login' %}" class="font-bold hover:underline" style="color:#8B6914">Login</a>
         </p>
     </div>
 </section>

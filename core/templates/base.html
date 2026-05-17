@@ -4,71 +4,349 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}PrayerStreak PH{% endblock %}</title>
+    <script>
+        (function() {
+            var saved = localStorage.getItem("prayerstreak_fontsize") || "16px";
+            document.documentElement.style.fontSize = saved;
+        })();
+    </script>
+    <link rel="manifest" href="/static/core/manifest.json">
+    <meta name="theme-color" content="#1E3A5F">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="PrayerStreak">
+    <link rel="apple-touch-icon" href="/static/core/images/icon-192.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: {
-                        sans: ["Poppins", "sans-serif"]
-                    },
+                    fontFamily: { sans: ["Poppins", "sans-serif"] },
                     colors: {
-                        ps: {
-                            gold: "#F59E0B",
-                            blue: "#1E3A5F",
-                            white: "#FFFFFF"
-                        }
+                        ps: { gold: "#8B6914", blue: "#1E3A5F", white: "#FDFAF4" }
                     }
                 }
             }
         }
     </script>
+    <style>
+        body { background-color: #F5F0E8; color: #2C2416; }
+        .card-surface { background: #FDFAF4; border: 1px solid #DDD5C0; border-radius: 12px; }
+        .stat-surface { background: #EDE8DC; border-radius: 8px; }
+        .verse-text { font-family: 'IM Fell English', serif; font-style: italic; font-size: 1.15rem; line-height: 1.8; color: #4A3000; }
+        .verse-reference { font-family: 'Poppins', sans-serif; font-size: 0.8rem; color: #8B6914; margin-top: 0.5rem; }
+        .footer-link { color: #6B5B3E; text-decoration: none; }
+        .footer-link:hover { text-decoration: underline; }
+        .btn-primary {
+            background: #1E3A5F;
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 24px;
+            font-size: 0.9rem;
+            font-family: 'Poppins', sans-serif;
+            cursor: pointer;
+            transition: background 0.2s, opacity 0.2s;
+        }
+        .btn-primary:hover { background: #16304F; }
+        .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+        .btn-secondary {
+            background: transparent;
+            color: #8B6914;
+            border: 1px solid #8B6914;
+            padding: 10px 24px;
+            border-radius: 24px;
+            font-size: 0.9rem;
+            font-family: 'Poppins', sans-serif;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-secondary:hover { background: rgba(139,105,20,0.08); }
+        .btn-danger {
+            background: transparent;
+            color: #A32D2D;
+            border: 1px solid #A32D2D;
+            padding: 10px 24px;
+            border-radius: 24px;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+        .btn-sm { padding: 6px 16px; font-size: 0.8rem; }
+        .font-size-btn, .lang-btn {
+            border: 0;
+            border-radius: 999px;
+            padding: 0.45rem 0.9rem;
+            cursor: pointer;
+            background: transparent;
+            color: #1E3A5F;
+            font-weight: 700;
+        }
+        .font-size-btn.active, .lang-btn.active { background: #1E3A5F; color: white; }
+        .toggle-switch {
+            position: relative; width: 44px; height: 24px;
+        }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .toggle-slider {
+            position: absolute; cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: #D3D1C7; border-radius: 24px;
+            transition: 0.3s;
+        }
+        .toggle-slider:before {
+            position: absolute; content: "";
+            height: 18px; width: 18px; left: 3px; bottom: 3px;
+            background: white; border-radius: 50%; transition: 0.3s;
+        }
+        input:checked + .toggle-slider { background: #1E3A5F; }
+        input:checked + .toggle-slider:before { transform: translateX(20px); }
+        .bottom-nav {
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 60px;
+            z-index: 60;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            background: #1E3A5F;
+        }
+        .bottom-nav a {
+            flex: 1;
+            display: flex;
+            height: 100%;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.1rem;
+            color: rgba(255,255,255,.7);
+            font-size: 0.625rem;
+            font-weight: 700;
+            text-decoration: none;
+        }
+        .bottom-nav a.active { color: #F0C040; }
+        .bottom-nav i { font-size: 1.25rem; }
+        .dark-mode { background: #111827; color: #FDF7EC; }
+        .dark-mode .card-surface, .dark-mode .stat-surface { background: #1F2937; border-color: #374151; color: #FDF7EC; }
+        .dark-mode .text-ps-blue { color: #FDF7EC !important; }
+        {% if senior_mode %}
+        html { font-size: 22px !important; }
+        .nav-link-label { font-size: 13px !important; }
+        .bottom-nav { height: 70px !important; }
+        .bottom-nav a { font-size: 13px !important; }
+        {% endif %}
+    </style>
 </head>
-<body class="min-h-screen bg-[#fffdf8] font-sans text-ps-blue">
-    <header class="border-b border-amber-100 bg-white/95">
-        <nav class="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
-            <a href="/" class="text-xl font-extrabold text-ps-blue">
-                <span class="text-ps-gold">Prayer</span>Streak PH
-            </a>
+<body class="min-h-screen font-sans {% if user.is_authenticated and user.dark_mode %}dark-mode{% endif %}">
+    <div id="toast-container" style="position:fixed; bottom:80px; left:50%; transform:translateX(-50%); z-index:1000; display:flex; flex-direction:column; gap:8px; pointer-events:none; width:90%; max-width:360px;"></div>
 
-            <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
-                <div class="flex flex-wrap gap-x-5 gap-y-2 text-sm font-semibold">
-                    <a href="/" class="hover:text-ps-gold">Home</a>
-                    <a href="/dashboard/" class="hover:text-ps-gold">Daily Prayer</a>
-                    <a href="/leaderboard/" class="hover:text-ps-gold">Community</a>
-                    <a href="/invite/" class="hover:text-ps-gold">Share</a>
-                    <a href="/donate/" class="hover:text-ps-gold">Donate</a>
-                </div>
+    <div id="install-banner" style="display:none; position:fixed; bottom:0; left:0; right:0; background:#1E3A5F; color:white; padding:0.75rem 1.25rem; align-items:center; justify-content:space-between; z-index:999; font-family:'Poppins',sans-serif; font-size:0.875rem;">
+        <span>Add PrayerStreak PH to your home screen</span>
+        <div style="display:flex; gap:0.5rem;">
+            <button class="btn-primary btn-sm" onclick="installApp()" style="background:#8B6914;">Install</button>
+            <button class="btn-secondary btn-sm" onclick="document.getElementById('install-banner').style.display='none'" style="color:white;border-color:white;">Not now</button>
+        </div>
+    </div>
 
-                <div class="flex items-center gap-3 text-sm font-semibold">
-                    {% if user.is_authenticated %}
-                        <span class="rounded-full bg-amber-50 px-3 py-1 text-ps-blue">{{ user.username }}</span>
-                        <form method="post" action="{% url 'logout' %}">
-                            {% csrf_token %}
-                            <button type="submit" class="rounded-full bg-ps-blue px-4 py-2 text-white hover:bg-ps-gold">
-                                Logout
-                            </button>
-                        </form>
-                    {% else %}
-                        <a href="{% url 'login' %}" class="hover:text-ps-gold">Login</a>
-                        <a href="{% url 'register' %}" class="rounded-full bg-ps-gold px-4 py-2 text-white hover:bg-ps-blue">
-                            Register
-                        </a>
-                    {% endif %}
-                </div>
+    <header class="hidden border-b border-[#DDD5C0] md:block" style="background:#1E3A5F">
+        <nav class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-8">
+            <a href="/" class="text-xl font-extrabold text-white"><span style="color:#F0C040">Prayer</span>Streak PH</a>
+            <div class="flex items-center gap-5 text-sm font-semibold">
+                <a href="/" class="text-white hover:underline" {% if request.path == '/' %}style="color:#F0C040; font-weight:500;"{% endif %} data-en="Home" data-fil="Tahanan">Home</a>
+                {% if user.is_authenticated %}
+                <a href="/dashboard/" class="text-white hover:underline" {% if request.path == '/dashboard/' %}style="color:#F0C040; font-weight:500;"{% endif %} data-en="Today" data-fil="Ngayon">Today</a>
+                {% endif %}
+                {% if user.is_authenticated %}
+                    <a href="/journal/" class="text-white hover:underline" {% if '/journal/' in request.path %}style="color:#F0C040; font-weight:500;"{% endif %}>Journal</a>
+                {% endif %}
+                {% if user.is_authenticated %}
+                    <a href="/bible/" class="text-white hover:underline" {% if '/bible/' in request.path %}style="color:#F0C040; font-weight:500;"{% endif %}>Bible</a>
+                {% endif %}
+                <a href="/community/" class="text-white hover:underline" {% if request.path == '/community/' %}style="color:#F0C040; font-weight:500;"{% endif %} data-en="Community" data-fil="Komunidad">Community</a>
+                {% if user.is_authenticated and has_family %}
+                    <a href="/family/" class="text-white hover:underline" {% if '/family/' in request.path %}style="color:#F0C040; font-weight:500;"{% endif %}>Family</a>
+                {% endif %}
+                {% if user.is_authenticated %}
+                    <a href="/settings/" class="text-white hover:underline" {% if '/settings/' in request.path %}style="color:#F0C040; font-weight:500;"{% endif %}>Settings</a>
+                    <a href="/donate/" class="text-white hover:underline" {% if request.path == '/donate/' %}style="color:#F0C040; font-weight:500;"{% endif %} data-en="Donate" data-fil="Mag-ambag">Donate</a>
+                {% endif %}
+            </div>
+            <div class="flex items-center gap-3 text-sm font-semibold">
+                {% if user.is_authenticated %}
+                    <a href="/profile/" class="rounded-full px-3 py-1" style="background:#EDE8DC;color:#1E3A5F">{{ user.username }}</a>
+                    <form method="post" action="{% url 'logout' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn-secondary btn-sm" style="color:white;border-color:rgba(255,255,255,.45)" data-en="Logout" data-fil="Mag-logout">Logout</button>
+                    </form>
+                {% else %}
+                    <a href="{% url 'login' %}" class="text-white hover:underline" {% if request.path == '/login/' %}style="color:#F0C040; font-weight:500;"{% endif %} data-en="Login" data-fil="Mag-login">Login</a>
+                    <a href="{% url 'register' %}" class="btn-primary btn-sm" {% if request.path == '/register/' %}style="background:#8B6914;"{% endif %}>Register</a>
+                {% endif %}
             </div>
         </nav>
     </header>
 
-    <main class="mx-auto min-h-[calc(100vh-168px)] max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+    <main class="mx-auto min-h-[calc(100vh-168px)] max-w-7xl px-4 py-8 pb-20 sm:px-6 md:pb-0 lg:px-8">
         {% block content %}{% endblock %}
     </main>
 
-    <footer class="border-t border-amber-100 bg-white px-4 py-6 text-center text-sm font-medium text-ps-blue">
-        Made with &#128591; in the Philippines
+    <footer class="hidden border-t border-[#DDD5C0] px-4 py-6 text-xs font-medium md:block" style="background:#FDFAF4;color:#6B5B3E">
+        <div class="mx-auto flex max-w-7xl flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <p>Made with prayer in the Philippines</p>
+            <div>
+                <a href="/invite/" class="footer-link">Invite a friend</a>
+                <span> &middot; </span>
+                <a href="/donate/" class="footer-link">Support us</a>
+                <span> &middot; </span>
+                <a href="/leaderboard/" class="footer-link">Community</a>
+            </div>
+        </div>
     </footer>
+
+    <nav class="bottom-nav md:hidden">
+        {% if user.is_authenticated and senior_mode %}
+            <a href="/dashboard/" class="{% if request.path == '/dashboard/' %}active{% endif %}"><i class="ti ti-book"></i><span class="nav-link-label" data-en="Today" data-fil="Ngayon">Today</span></a>
+            <a href="/journal/" class="{% if '/journal/' in request.path %}active{% endif %}"><i class="ti ti-notebook"></i><span class="nav-link-label">Journal</span></a>
+            <a href="/community/" class="{% if request.path == '/community/' %}active{% endif %}"><i class="ti ti-users"></i><span class="nav-link-label" data-en="Community" data-fil="Komunidad">Community</span></a>
+            <a href="/profile/" class="{% if request.path == '/profile/' %}active{% endif %}"><i class="ti ti-user"></i><span class="nav-link-label" data-en="Profile" data-fil="Profile">Profile</span></a>
+        {% elif user.is_authenticated %}
+            <a href="/" class="{% if request.path == '/' %}active{% endif %}"><i class="ti ti-home"></i><span class="nav-link-label" data-en="Home" data-fil="Tahanan">Home</span></a>
+            <a href="/dashboard/" class="{% if request.path == '/dashboard/' %}active{% endif %}"><i class="ti ti-book"></i><span class="nav-link-label" data-en="Today" data-fil="Ngayon">Today</span></a>
+            <a href="/community/" class="{% if request.path == '/community/' %}active{% endif %}"><i class="ti ti-users"></i><span class="nav-link-label" data-en="Community" data-fil="Komunidad">Community</span></a>
+            {% if has_family %}
+                <a href="/family/" class="{% if '/family/' in request.path %}active{% endif %}"><i class="ti ti-home-heart"></i><span class="nav-link-label">Family</span></a>
+            {% endif %}
+            <a href="/donate/" class="{% if request.path == '/donate/' %}active{% endif %}"><i class="ti ti-heart"></i><span class="nav-link-label" data-en="Donate" data-fil="Mag-ambag">Donate</span></a>
+            <a href="/profile/" class="{% if request.path == '/profile/' or request.path == '/settings/' %}active{% endif %}"><i class="ti ti-user"></i><span class="nav-link-label" data-en="Profile" data-fil="Profile">Profile</span></a>
+        {% else %}
+            <a href="/" class="{% if request.path == '/' %}active{% endif %}"><i class="ti ti-home"></i><span class="nav-link-label" data-en="Home" data-fil="Tahanan">Home</span></a>
+            <a href="/community/" class="{% if request.path == '/community/' %}active{% endif %}"><i class="ti ti-users"></i><span class="nav-link-label" data-en="Community" data-fil="Komunidad">Community</span></a>
+            <a href="/login/" class="{% if request.path == '/login/' %}active{% endif %}"><i class="ti ti-login"></i><span class="nav-link-label" data-en="Login" data-fil="Mag-login">Login</span></a>
+            <a href="/register/" class="{% if request.path == '/register/' %}active{% endif %}"><i class="ti ti-user-plus"></i><span class="nav-link-label">Register</span></a>
+        {% endif %}
+    </nav>
+
+    <button id="back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" style="display:none; position:fixed; bottom:80px; right:16px; width:40px; height:40px; border-radius:50%; background:#1E3A5F; color:white; border:none; cursor:pointer; z-index:500; font-size:18px;">
+        <i class="ti ti-arrow-up"></i>
+    </button>
+
+    <script>
+        function showToast(message, type) {
+            const colors = {
+                success: {bg:'#1E3A5F', text:'white'},
+                error: {bg:'#A32D2D', text:'white'},
+                info: {bg:'#534AB7', text:'white'}
+            };
+            const c = colors[type] || colors.info;
+            const toast = document.createElement('div');
+            toast.style.cssText = "background:"+c.bg+";color:"+c.text+";padding:12px 20px;border-radius:24px;font-size:0.875rem;font-family:'Poppins',sans-serif;text-align:center;pointer-events:auto;opacity:0;transition:opacity 0.3s;";
+            toast.textContent = message;
+            document.getElementById('toast-container').appendChild(toast);
+            setTimeout(() => toast.style.opacity = '1', 10);
+            setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 3000);
+        }
+
+        function setFontSize(size) {
+            document.documentElement.style.fontSize = size;
+            localStorage.setItem("prayerstreak_fontsize", size);
+            document.querySelectorAll(".font-size-btn").forEach(btn => {
+                btn.classList.toggle("active", btn.dataset.size === size);
+            });
+        }
+
+        function setLanguage(lang) {
+            localStorage.setItem("prayerstreak_lang", lang);
+            document.querySelectorAll("[data-en][data-fil]").forEach(el => {
+                el.textContent = el.dataset[lang];
+            });
+            document.querySelectorAll(".lang-btn").forEach(btn => {
+                btn.classList.toggle("active", btn.dataset.lang === lang);
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const savedSize = localStorage.getItem("prayerstreak_fontsize") || "16px";
+            const savedLang = localStorage.getItem("prayerstreak_lang") || "en";
+            setFontSize(savedSize);
+            setLanguage(savedLang);
+            document.querySelectorAll(".font-size-btn").forEach(btn => btn.addEventListener("click", () => setFontSize(btn.dataset.size)));
+            document.querySelectorAll(".lang-btn").forEach(btn => btn.addEventListener("click", () => setLanguage(btn.dataset.lang)));
+            document.querySelectorAll('form').forEach(function(form) {
+                form.addEventListener('submit', function() {
+                    const submitBtn = form.querySelector('button[type="submit"], input[type="submit"]');
+                    if (submitBtn) {
+                        submitBtn.disabled = true;
+                        const originalText = submitBtn.textContent;
+                        submitBtn.textContent = 'Saving...';
+                        setTimeout(function() {
+                            submitBtn.disabled = false;
+                            submitBtn.textContent = originalText;
+                        }, 8000);
+                    }
+                });
+            });
+        });
+
+        window.addEventListener("scroll", function() {
+            document.getElementById("back-to-top").style.display = window.scrollY > 300 ? "block" : "none";
+        });
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/sw.js').catch(function(err) { console.log('SW error:', err); });
+            });
+        }
+
+        let deferredPrompt;
+        let scrolledEnough = false;
+        let timeEnough = false;
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+        });
+
+        function maybeShowBanner() {
+            if (deferredPrompt && scrolledEnough && timeEnough) {
+                document.getElementById('install-banner').style.display = 'flex';
+            }
+        }
+
+        window.addEventListener('scroll', () => {
+            const scrollableHeight = document.body.scrollHeight - window.innerHeight;
+            const scrollPercent = scrollableHeight > 0 ? window.scrollY / scrollableHeight : 1;
+            if (scrollPercent > 0.5) {
+                scrolledEnough = true;
+                maybeShowBanner();
+            }
+        });
+
+        setTimeout(() => {
+            timeEnough = true;
+            maybeShowBanner();
+        }, 30000);
+
+        function installApp() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then(() => {
+                    deferredPrompt = null;
+                    document.getElementById('install-banner').style.display = 'none';
+                });
+            }
+        }
+
+        window.addEventListener('appinstalled', () => {
+            document.getElementById('install-banner').style.display = 'none';
+        });
+    </script>
+    {% for message in messages %}
+        <script>showToast("{{ message|escapejs }}", "{{ message.tags }}");</script>
+    {% endfor %}
 </body>
 </html>

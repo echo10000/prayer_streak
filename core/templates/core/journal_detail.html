@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Prayer Journal Entry | PrayerStreak PH{% endblock %}
+
+{% block content %}
+<div class="mx-auto max-w-3xl space-y-6">
+    <a href="{% url 'journal' %}" class="inline-flex items-center gap-2 text-sm font-bold" style="color:#8B6914;text-decoration:none;">← Back to journal</a>
+
+    <article class="card-surface p-6 sm:p-8">
+        <p class="text-sm font-bold uppercase tracking-wide" style="color:#8B6914">{{ entry.get_category_display }}</p>
+        <h1 class="mt-2 text-3xl font-extrabold text-ps-blue">{{ entry.date|date:"l, F d, Y" }}</h1>
+
+        <blockquote class="mt-6" style="border-left:3px solid #8B6914; padding:1rem 1.25rem; font-size:1rem; line-height:1.8; color:#2C2416; background:#FDFAF4;">
+            {{ entry.content|linebreaksbr }}
+        </blockquote>
+
+        {% if verse_tag %}
+            <div class="mt-4">
+                <span class="rounded-full px-3 py-1 text-sm font-bold" style="background:#FAEEDA;color:#8B6914">{{ verse_tag }}</span>
+            </div>
+        {% endif %}
+    </article>
+
+    {% if entry.is_answered %}
+        <section class="rounded-xl border border-green-200 p-6" style="background:#F0FFF4;">
+            <p class="font-bold text-green-800"><i class="ti ti-check"></i> God answered this prayer</p>
+            {% if testimony_note %}
+                <blockquote class="mt-4" style="border-left:3px solid #2F855A; padding:1rem 1.25rem; font-size:1rem; line-height:1.8; color:#22543D; background:white;">
+                    {{ testimony_note|linebreaksbr }}
+                </blockquote>
+            {% else %}
+                <form method="post" class="mt-4 space-y-4">
+                    {% csrf_token %}
+                    <textarea name="testimony_note" rows="5" class="w-full resize-none rounded-xl border border-[#DDD5C0] bg-[#FDFAF4] px-4 py-3 text-ps-blue outline-none" placeholder="Write how God answered this prayer..."></textarea>
+                    <button type="submit" class="btn-primary">Save testimony</button>
+                </form>
+            {% endif %}
+        </section>
+    {% else %}
+        <section class="rounded-xl p-6" style="border:1px solid #8B6914;background:#FAEEDA;">
+            <p class="font-bold" style="color:#8B6914;">Still praying</p>
+            <form method="post" action="{% url 'journal_mark_answered' entry.pk %}" class="mt-4 space-y-4">
+                {% csrf_token %}
+                <textarea name="testimony_note" rows="4" class="w-full resize-none rounded-xl border border-[#DDD5C0] bg-[#FDFAF4] px-4 py-3 text-ps-blue outline-none" placeholder="Write how God answered this prayer..."></textarea>
+                <button type="submit" class="btn-secondary">Mark as answered</button>
+            </form>
+        </section>
+    {% endif %}
+
+    {% if verse_tag %}
+        <section class="card-surface p-5">
+            <p class="text-sm font-bold uppercase tracking-wide" style="color:#8B6914">Related verse</p>
+            <p class="mt-2 text-ps-blue">{{ verse_tag }}</p>
+        </section>
+    {% endif %}
+
+    <nav class="flex items-center justify-between gap-4">
+        {% if previous_prayer %}
+            <a href="{% url 'journal_detail' previous_prayer.pk %}" class="btn-secondary">← Previous prayer</a>
+        {% else %}
+            <span></span>
+        {% endif %}
+        {% if next_prayer %}
+            <a href="{% url 'journal_detail' next_prayer.pk %}" class="btn-secondary">Next prayer →</a>
+        {% endif %}
+    </nav>
+</div>
+{% endblock %}
