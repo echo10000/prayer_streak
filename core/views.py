@@ -10,6 +10,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
+from django.core.cache import cache
 from django.db import IntegrityError, transaction
 from django.db.models import Count, F, Q, Sum
 from django.http import FileResponse, HttpResponse, JsonResponse
@@ -52,7 +53,23 @@ def service_worker(request):
 
 
 def home_view(request):
-    return render(request, "core/index.html")
+    today = timezone.localdate()
+    stats = cache.get("landing_stats")
+    if not stats:
+        stats = {
+            "total_prayers": PrayerLog.objects.count(),
+            "active_streaks": get_user_model().objects.filter(streak__gte=1).count(),
+            "total_users": get_user_model().objects.filter(is_active=True).count(),
+            "answered_prayers": PrayerLog.objects.filter(is_answered=True).count(),
+        }
+        cache.set("landing_stats", stats, 3600)
+
+    context = {
+        **stats,
+        "prayers_today": PrayerLog.objects.filter(date=today).count(),
+        "today_verse": DailyVerse.objects.filter(date=today).first(),
+    }
+    return render(request, "core/index.html", context)
 
 
 def build_prayer_stats(user, today):
@@ -290,11 +307,11 @@ def dashboard_view(request):
     reminders = PrayerReminder.objects.filter(user=request.user, is_active=True)[:3]
     prayer_stats = build_prayer_stats(request.user, today)
     active_plan = (
-        UserPrayerPlan.objects.filter(user=request.user, is_completed=False)
+        UserBibleReadingPlan.objects.filter(user=request.user, is_completed=False)
         .select_related("plan")
         .first()
     )
-    featured_plan = PrayerPlan.objects.filter(is_active=True).first()
+    featured_plan = BibleReadingPlan.objects.filter(is_active=True).first()
     bible_book = BibleBook.objects.filter(abbreviation="John").first()
     bible_progress = None
     next_bible_chapter = None
@@ -414,31 +431,44 @@ def bible_plans_view(request):
     }
     return render(
         request,
-        "core/bible_plans.html",
-        {"plans": plans, "user_plans": user_plans},
+        "core/plan_list.html",
+        {"plans": plans, "user_enrollments": user_plans},
     )
 
 
 @login_required(login_url="/login/")
 def bible_plan_detail_view(request, pk):
-    plan = get_object_or_404(BibleReadingPlan, pk=pk, is_active=True)
+    plan = get_object_or_404(
+        BibleReadingPlan.objects.prefetch_related("plan_days"),
+        pk=pk,
+        is_active=True,
+    )
     user_plan = UserBibleReadingPlan.objects.filter(
         user=request.user,
         plan=plan,
     ).first()
     completed_day_ids = set()
+    completed_day_numbers = set()
     if user_plan:
-        completed_day_ids = set(
-            user_plan.completed_days.values_list("plan_day_id", flat=True)
+        completed_days = user_plan.completed_days.select_related("plan_day")
+        completed_day_ids = set(completed_days.values_list("plan_day_id", flat=True))
+        completed_day_numbers = set(
+            completed_days.values_list("plan_day__day_number", flat=True)
         )
+    total_days = plan.days
+    completed_count = len(completed_day_ids)
+    progress_percent = int((completed_count / total_days) * 100) if total_days else 0
     return render(
         request,
-        "core/bible_plan_detail.html",
+        "core/plan_detail.html",
         {
             "plan": plan,
             "user_plan": user_plan,
             "completed_day_ids": completed_day_ids,
-            "completed_count": len(completed_day_ids),
+            "completed_day_numbers": completed_day_numbers,
+            "completed_count": completed_count,
+            "progress_percent": progress_percent,
+            "total_days": total_days,
         },
     )
 
@@ -453,23 +483,65 @@ def start_bible_plan_view(request, pk):
 
 
 @login_required(login_url="/login/")
-@require_POST
-def complete_bible_plan_day_view(request, pk, day_pk):
+def bible_plan_day_view(request, pk, day):
     plan = get_object_or_404(BibleReadingPlan, pk=pk, is_active=True)
-    plan_day = get_object_or_404(BibleReadingPlanDay, pk=day_pk, plan=plan)
+    plan_day = get_object_or_404(BibleReadingPlanDay, plan=plan, day_number=day)
+    user_plan = get_object_or_404(UserBibleReadingPlan, user=request.user, plan=plan)
+    completed_day_numbers = set(
+        user_plan.completed_days.values_list("plan_day__day_number", flat=True)
+    )
+    previous_day = (
+        plan.plan_days.filter(day_number__lt=day).order_by("-day_number").first()
+    )
+    next_day = plan.plan_days.filter(day_number__gt=day).order_by("day_number").first()
+
+    return render(
+        request,
+        "core/plan_day.html",
+        {
+            "plan": plan,
+            "plan_day": plan_day,
+            "user_plan": user_plan,
+            "completed_day_numbers": completed_day_numbers,
+            "is_completed": day in completed_day_numbers,
+            "previous_day": previous_day,
+            "next_day": next_day,
+        },
+    )
+
+
+@login_required(login_url="/login/")
+@require_POST
+def complete_bible_plan_day_view(request, pk, day):
+    plan = get_object_or_404(BibleReadingPlan, pk=pk, is_active=True)
+    plan_day = get_object_or_404(BibleReadingPlanDay, day_number=day, plan=plan)
     user_plan, _ = UserBibleReadingPlan.objects.get_or_create(
         user=request.user,
         plan=plan,
     )
-    BibleReadingPlanProgress.objects.get_or_create(
+    _, created = BibleReadingPlanProgress.objects.get_or_create(
         user_plan=user_plan,
         plan_day=plan_day,
     )
+    if created:
+        get_user_model().objects.filter(pk=request.user.pk).update(points=F("points") + 15)
     completed_count = user_plan.completed_days.count()
-    user_plan.current_day = min(completed_count + 1, plan.days)
+    next_day = (
+        plan.plan_days.exclude(
+            pk__in=user_plan.completed_days.values_list("plan_day_id", flat=True)
+        )
+        .order_by("day_number")
+        .first()
+    )
+    user_plan.current_day = next_day.day_number if next_day else min(completed_count + 1, plan.days)
+    was_completed = user_plan.is_completed
     user_plan.is_completed = completed_count >= plan.days
     user_plan.save(update_fields=["current_day", "is_completed"])
-    messages.success(request, "Reading marked complete.")
+    if user_plan.is_completed and not was_completed:
+        get_user_model().objects.filter(pk=request.user.pk).update(points=F("points") + 100)
+        messages.success(request, "Plan complete. Bonus points awarded.")
+    else:
+        messages.success(request, "Reading marked complete.")
     return redirect("bible_plan_detail", pk=plan.pk)
 
 
@@ -964,17 +1036,24 @@ def routine_settings_view(request):
     else:
         form = PrayerReminderForm()
 
-    plans = PrayerPlan.objects.filter(is_active=True)
-    active_plans = UserPrayerPlan.objects.filter(user=request.user).select_related("plan")
+    plans = BibleReadingPlan.objects.filter(is_active=True).prefetch_related("plan_days")
+    active_plans = UserBibleReadingPlan.objects.filter(user=request.user).select_related("plan")
     active_plan_map = {active_plan.plan_id: active_plan for active_plan in active_plans}
     plan_cards = [
         {
             "plan": plan,
             "active_plan": active_plan_map.get(plan.pk),
             "progress_percent": int(
-                (min(active_plan_map[plan.pk].current_day, plan.days) / plan.days) * 100
+                (
+                    active_plan_map[plan.pk].completed_days.count()
+                    / max(plan.days, 1)
+                )
+                * 100
             )
             if plan.pk in active_plan_map and plan.days
+            else 0,
+            "completed_count": active_plan_map[plan.pk].completed_days.count()
+            if plan.pk in active_plan_map
             else 0,
         }
         for plan in plans
@@ -990,6 +1069,7 @@ def routine_settings_view(request):
             "active_plans": active_plans,
             "plan_cards": plan_cards,
             "prayer_focus_choices": get_user_model().PrayerFocus.choices,
+            "dark_mode_enabled": request.user.dark_mode,
             "vapid_public_key": settings.VAPID_PUBLIC_KEY,
         },
     )
@@ -1026,14 +1106,6 @@ def save_push_subscription_view(request):
 @require_POST
 def delete_reminder_view(request, pk):
     PrayerReminder.objects.filter(pk=pk, user=request.user).delete()
-    return redirect("/settings/")
-
-
-@login_required(login_url="/login/")
-@require_POST
-def start_prayer_plan_view(request, pk):
-    plan = get_object_or_404(PrayerPlan, pk=pk, is_active=True)
-    UserPrayerPlan.objects.get_or_create(user=request.user, plan=plan)
     return redirect("/settings/")
 
 
@@ -1221,3 +1293,14 @@ def donate_view(request):
         form = DonationForm(initial=initial)
 
     return render(request, "core/donate.html", {"form": form})
+
+
+def custom_404(request, exception):
+    return render(request, "core/404.html", status=404)
+
+
+def custom_500(request):
+    # Local test instructions:
+    # Temporarily add a URL/view that raises Exception("test 500") with DEBUG=False,
+    # then visit that URL to confirm the branded 500 page renders.
+    return render(request, "core/500.html", status=500)

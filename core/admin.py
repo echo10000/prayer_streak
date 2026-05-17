@@ -5,12 +5,33 @@ from django.contrib.auth.admin import UserAdmin
 from django.db import IntegrityError
 
 from .models import (
+    BibleBook,
+    BibleChapter,
+    BibleReadingProgress,
     DailyDevotional,
     DailyVerse,
     Donation,
+    Family,
+    FamilyMember,
+    FamilyPrayerRequest,
+    GroupGoal,
+    BibleReadingPlan,
+    BibleReadingPlanDay,
+    BibleReadingPlanProgress,
+    PrayerGroup,
+    PrayerGroupMembership,
     PrayerLog,
+    PrayerPlan,
+    PrayerPlanDay,
+    PrayerRequest,
+    PrayerReminder,
+    PublicTestimony,
+    PushSubscription,
+    ReminderDelivery,
     Referral,
     StreakLog,
+    UserPrayerPlan,
+    UserBibleReadingPlan,
     User,
 )
 
@@ -25,6 +46,12 @@ class CustomUserAdmin(UserAdmin):
                     "referral_code",
                     "points",
                     "streak",
+                    "streak_freezes",
+                    "grace_days_used",
+                    "sabbath_mode",
+                    "dark_mode",
+                    "reminder_email_enabled",
+                    "reminder_push_enabled",
                     "last_active",
                     "referred_by",
                 )
@@ -39,6 +66,12 @@ class CustomUserAdmin(UserAdmin):
                     "referral_code",
                     "points",
                     "streak",
+                    "streak_freezes",
+                    "grace_days_used",
+                    "sabbath_mode",
+                    "dark_mode",
+                    "reminder_email_enabled",
+                    "reminder_push_enabled",
                     "last_active",
                     "referred_by",
                 )
@@ -50,6 +83,7 @@ class CustomUserAdmin(UserAdmin):
         "email",
         "points",
         "streak",
+        "streak_freezes",
         "referral_code",
         "last_active",
         "date_joined",
@@ -105,13 +139,140 @@ class DailyDevotionalAdmin(admin.ModelAdmin):
 
 @admin.register(PrayerLog)
 class PrayerLogAdmin(admin.ModelAdmin):
-    list_display = ("user", "date", "category", "is_answered", "content_preview")
+    list_display = ("user", "date", "category", "is_answered", "verse_reference", "content_preview")
     list_filter = ("category", "is_answered", "date")
-    search_fields = ("user__username",)
+    search_fields = ("user__username", "content", "verse_reference", "verse_tags")
 
     @admin.display(description="Content preview")
     def content_preview(self, obj):
         return obj.content[:60]
+
+
+@admin.register(PrayerRequest)
+class PrayerRequestAdmin(admin.ModelAdmin):
+    list_display = (
+        "date",
+        "short_content",
+        "status",
+        "priority",
+        "is_anonymous",
+        "group",
+        "prayed_count",
+        "is_active",
+    )
+    list_editable = ("status", "priority", "is_active")
+    list_filter = ("status", "priority", "is_anonymous", "is_active", "group")
+    search_fields = ("content", "user__username")
+
+    @admin.display(description="Content preview")
+    def short_content(self, obj):
+        return obj.content[:60]
+
+
+class PrayerPlanDayInline(admin.TabularInline):
+    model = PrayerPlanDay
+    extra = 1
+
+
+class PrayerGroupMembershipInline(admin.TabularInline):
+    model = PrayerGroupMembership
+    extra = 1
+
+
+@admin.register(PrayerGroup)
+class PrayerGroupAdmin(admin.ModelAdmin):
+    list_display = ("name", "owner", "goal_per_week", "created_at")
+    search_fields = ("name", "owner__username")
+    inlines = (PrayerGroupMembershipInline,)
+
+
+@admin.register(GroupGoal)
+class GroupGoalAdmin(admin.ModelAdmin):
+    list_display = ("title", "group", "goal_type", "target_count", "start_date", "end_date", "is_active")
+    list_filter = ("goal_type", "is_active", "group")
+    search_fields = ("title", "group__name")
+
+
+@admin.register(PrayerReminder)
+class PrayerReminderAdmin(admin.ModelAdmin):
+    list_display = ("user", "routine", "label", "time", "is_active", "email_enabled", "push_enabled")
+    list_filter = ("routine", "is_active", "email_enabled", "push_enabled")
+    search_fields = ("user__username", "label")
+
+
+@admin.register(PushSubscription)
+class PushSubscriptionAdmin(admin.ModelAdmin):
+    list_display = ("user", "is_active", "updated_at")
+    list_filter = ("is_active",)
+    search_fields = ("user__username", "endpoint")
+
+
+@admin.register(ReminderDelivery)
+class ReminderDeliveryAdmin(admin.ModelAdmin):
+    list_display = ("user", "reminder", "channel", "sent_for_date", "sent_at")
+    list_filter = ("channel", "sent_for_date")
+    search_fields = ("user__username",)
+
+
+@admin.register(PrayerPlan)
+class PrayerPlanAdmin(admin.ModelAdmin):
+    list_display = ("title", "days", "is_active")
+    list_filter = ("is_active",)
+    search_fields = ("title", "description")
+    inlines = (PrayerPlanDayInline,)
+
+
+@admin.register(UserPrayerPlan)
+class UserPrayerPlanAdmin(admin.ModelAdmin):
+    list_display = ("user", "plan", "started_at", "current_day", "is_completed")
+    list_filter = ("plan", "is_completed")
+    search_fields = ("user__username", "plan__title")
+
+
+class BibleReadingPlanDayInline(admin.TabularInline):
+    model = BibleReadingPlanDay
+    extra = 1
+
+
+@admin.register(BibleReadingPlan)
+class BibleReadingPlanAdmin(admin.ModelAdmin):
+    list_display = ("title", "days", "theme", "is_active")
+    list_filter = ("theme", "is_active")
+    search_fields = ("title", "description")
+    inlines = (BibleReadingPlanDayInline,)
+
+
+@admin.register(UserBibleReadingPlan)
+class UserBibleReadingPlanAdmin(admin.ModelAdmin):
+    list_display = ("user", "plan", "started_at", "current_day", "is_completed")
+    list_filter = ("plan", "is_completed")
+    search_fields = ("user__username", "plan__title")
+
+
+@admin.register(BibleReadingPlanProgress)
+class BibleReadingPlanProgressAdmin(admin.ModelAdmin):
+    list_display = ("user_plan", "plan_day", "completed_at")
+    list_filter = ("plan_day__plan",)
+
+
+@admin.register(BibleBook)
+class BibleBookAdmin(admin.ModelAdmin):
+    list_display = ("name", "abbreviation", "testament", "total_chapters", "sort_order")
+    search_fields = ("name", "abbreviation")
+
+
+@admin.register(BibleChapter)
+class BibleChapterAdmin(admin.ModelAdmin):
+    list_display = ("book", "number", "title")
+    list_filter = ("book",)
+    search_fields = ("book__name", "title", "text")
+
+
+@admin.register(BibleReadingProgress)
+class BibleReadingProgressAdmin(admin.ModelAdmin):
+    list_display = ("user", "chapter", "completed_at")
+    list_filter = ("chapter__book", "completed_at")
+    search_fields = ("user__username", "chapter__book__name")
 
 
 @admin.register(StreakLog)
@@ -140,9 +301,53 @@ class DonationAdmin(admin.ModelAdmin):
         "method",
         "reference_number",
         "is_verified",
+        "is_recurring",
+        "receipt_sent",
         "date",
     )
-    list_filter = ("method", "is_verified")
-    list_editable = ("is_verified",)
+    list_filter = ("method", "is_verified", "is_recurring", "receipt_sent")
+    list_editable = ("is_verified", "receipt_sent")
     search_fields = ("donor_name", "reference_number")
     actions = (mark_selected_as_verified,)
+
+
+@admin.register(PublicTestimony)
+class PublicTestimonyAdmin(admin.ModelAdmin):
+    list_display = ("title", "user", "is_anonymous", "is_approved", "created_at", "amen_count")
+    list_filter = ("is_approved", "is_anonymous")
+    list_editable = ("is_approved",)
+    search_fields = ("title", "content", "user__username")
+
+    @admin.display(description="Amen")
+    def amen_count(self, obj):
+        return obj.amen_by.count()
+
+
+class FamilyMemberInline(admin.TabularInline):
+    model = FamilyMember
+    extra = 1
+
+
+@admin.register(Family)
+class FamilyAdmin(admin.ModelAdmin):
+    list_display = ("name", "created_by", "invite_code", "created_at")
+    search_fields = ("name", "invite_code", "created_by__username")
+    inlines = (FamilyMemberInline,)
+
+
+@admin.register(FamilyMember)
+class FamilyMemberAdmin(admin.ModelAdmin):
+    list_display = ("family", "user", "nickname", "role", "joined_at")
+    list_filter = ("role", "family")
+    search_fields = ("family__name", "user__username", "nickname")
+
+
+@admin.register(FamilyPrayerRequest)
+class FamilyPrayerRequestAdmin(admin.ModelAdmin):
+    list_display = ("family", "user", "is_answered", "date", "content_preview")
+    list_filter = ("is_answered", "family")
+    search_fields = ("content", "family__name", "user__username")
+
+    @admin.display(description="Content preview")
+    def content_preview(self, obj):
+        return obj.content[:60]

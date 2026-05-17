@@ -1,15 +1,42 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="{% if user.is_authenticated and user.dark_mode %}dark-mode{% endif %}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{% block title %}PrayerStreak PH{% endblock %}</title>
     <script>
         (function() {
+            var dark = localStorage.getItem('prayerstreak_dark');
+            var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (dark === '1' || (dark === null && prefersDark)) {
+                document.documentElement.classList.add('dark-mode');
+            }
             var saved = localStorage.getItem("prayerstreak_fontsize") || "16px";
             document.documentElement.style.fontSize = saved;
         })();
     </script>
+    <title>{% block title %}PrayerStreak PH{% endblock %}</title>
+    <meta name="description" content="PrayerStreak PH — Your daily rhythm of Scripture and prayer, made for Filipinos. Read God's Word, journal your prayers, and grow in faith every day.">
+    <meta name="keywords" content="prayer app Philippines, devotional app Filipino, daily Bible verse, prayer journal, Christian app Philippines">
+    <meta name="author" content="PrayerStreak PH">
+    <meta name="robots" content="index, follow">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="PrayerStreak PH">
+    <meta property="og:title" content="{% block og_title %}PrayerStreak PH — Daily Prayer for Filipinos{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}Read God's Word, journal your prayers, and build a daily prayer streak. Free devotional app made for Filipino Christians.{% endblock %}">
+    <meta property="og:image" content="{% block og_image %}{{ request.scheme }}://{{ request.get_host }}/static/core/images/og_image.png{% endblock %}">
+    <meta property="og:url" content="{{ request.build_absolute_uri }}">
+    <meta property="og:locale" content="en_PH">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{% block twitter_title %}PrayerStreak PH{% endblock %}">
+    <meta name="twitter:description" content="{% block twitter_description %}Daily prayer, Scripture, and community for Filipino Christians.{% endblock %}">
+    <meta name="twitter:image" content="{{ request.scheme }}://{{ request.get_host }}/static/core/images/og_image.png">
+    <link rel="canonical" href="{{ request.build_absolute_uri }}">
+    <!-- OG IMAGE: Create a 1200x630px image and save as:
+         core/static/core/images/og_image.png
+         Design: navy background #1E3A5F, PrayerStreak PH logo in white/gold,
+         tagline "Daily Prayer for Filipinos" in white,
+         cross icon and praying hands illustration
+         Use Canva → Social Media → Facebook Link Preview (1200x630) -->
     <link rel="manifest" href="/static/core/manifest.json">
     <meta name="theme-color" content="#1E3A5F">
     <meta name="mobile-web-app-capable" content="yes">
@@ -35,6 +62,19 @@
         }
     </script>
     <style>
+        html.dark-mode {
+            --dm-bg: #0F1923;
+            --dm-bg-secondary: #172330;
+            --dm-bg-card: #1A2B3C;
+            --dm-bg-surface: #1F3346;
+            --dm-text-primary: #F0EAD6;
+            --dm-text-secondary: #A89880;
+            --dm-text-muted: #6B7A8A;
+            --dm-border: rgba(240,234,214,0.12);
+            --dm-gold: #F0C040;
+            --dm-gold-muted: #BA8A14;
+            --dm-navy: #1E3A5F;
+        }
         body { background-color: #F5F0E8; color: #2C2416; }
         .card-surface { background: #FDFAF4; border: 1px solid #DDD5C0; border-radius: 12px; }
         .stat-surface { background: #EDE8DC; border-radius: 8px; }
@@ -131,9 +171,66 @@
         }
         .bottom-nav a.active { color: #F0C040; }
         .bottom-nav i { font-size: 1.25rem; }
-        .dark-mode { background: #111827; color: #FDF7EC; }
-        .dark-mode .card-surface, .dark-mode .stat-surface { background: #1F2937; border-color: #374151; color: #FDF7EC; }
-        .dark-mode .text-ps-blue { color: #FDF7EC !important; }
+        html.dark-mode body {
+            background-color: var(--dm-bg) !important;
+            color: var(--dm-text-primary) !important;
+        }
+        html.dark-mode .card,
+        html.dark-mode .card-surface,
+        html.dark-mode .stat-surface,
+        html.dark-mode [style*="background:#FDFAF4"],
+        html.dark-mode [style*="background: #FDFAF4"] {
+            background: var(--dm-bg-card) !important;
+            border-color: var(--dm-border) !important;
+            color: var(--dm-text-primary) !important;
+        }
+        html.dark-mode [style*="background:#F5F0E8"],
+        html.dark-mode [style*="background: #F5F0E8"],
+        html.dark-mode [style*="background:#EDE8DC"],
+        html.dark-mode [style*="background: #EDE8DC"] {
+            background: var(--dm-bg-secondary) !important;
+        }
+        html.dark-mode [style*="background:#FAEEDA"],
+        html.dark-mode [style*="background: #FAEEDA"] {
+            background: var(--dm-bg-surface) !important;
+        }
+        html.dark-mode [style*="color:#2C2416"],
+        html.dark-mode [style*="color: #2C2416"],
+        html.dark-mode [style*="color:#4A3000"],
+        html.dark-mode [style*="color: #4A3000"] {
+            color: var(--dm-text-primary) !important;
+        }
+        html.dark-mode [style*="color:#6B5B3E"],
+        html.dark-mode [style*="color: #6B5B3E"] {
+            color: var(--dm-text-secondary) !important;
+        }
+        html.dark-mode input,
+        html.dark-mode textarea,
+        html.dark-mode select {
+            background: var(--dm-bg-surface) !important;
+            color: var(--dm-text-primary) !important;
+            border-color: var(--dm-border) !important;
+        }
+        html.dark-mode .verse-text,
+        html.dark-mode .text-ps-blue {
+            color: var(--dm-text-primary) !important;
+        }
+        html.dark-mode hr {
+            border-color: var(--dm-border) !important;
+        }
+        html.dark-mode .btn-secondary {
+            color: var(--dm-gold) !important;
+            border-color: var(--dm-gold-muted) !important;
+        }
+        html.dark-mode nav,
+        html.dark-mode .bottom-nav {
+            background: #0A1520 !important;
+        }
+        html.dark-mode footer {
+            background: var(--dm-bg-secondary) !important;
+            border-color: var(--dm-border) !important;
+            color: var(--dm-text-secondary) !important;
+        }
         {% if senior_mode %}
         html { font-size: 22px !important; }
         .nav-link-label { font-size: 13px !important; }
@@ -142,7 +239,7 @@
         {% endif %}
     </style>
 </head>
-<body class="min-h-screen font-sans {% if user.is_authenticated and user.dark_mode %}dark-mode{% endif %}">
+<body class="min-h-screen font-sans">
     <div id="toast-container" style="position:fixed; bottom:80px; left:50%; transform:translateX(-50%); z-index:1000; display:flex; flex-direction:column; gap:8px; pointer-events:none; width:90%; max-width:360px;"></div>
 
     <div id="install-banner" style="display:none; position:fixed; bottom:0; left:0; right:0; background:#1E3A5F; color:white; padding:0.75rem 1.25rem; align-items:center; justify-content:space-between; z-index:999; font-family:'Poppins',sans-serif; font-size:0.875rem;">
@@ -267,6 +364,16 @@
             document.querySelectorAll(".lang-btn").forEach(btn => {
                 btn.classList.toggle("active", btn.dataset.lang === lang);
             });
+        }
+
+        function applyDarkMode(enabled) {
+            if (enabled) {
+                document.documentElement.classList.add('dark-mode');
+                localStorage.setItem('prayerstreak_dark', '1');
+            } else {
+                document.documentElement.classList.remove('dark-mode');
+                localStorage.setItem('prayerstreak_dark', '0');
+            }
         }
 
         document.addEventListener("DOMContentLoaded", function() {

@@ -9,7 +9,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = config("SECRET_KEY", default="django-insecure-local-development-key")
 
-DEBUG = config("DEBUG", default=True, cast=bool)
+DEBUG = config("DEBUG", default=False, cast=bool)
 
 ALLOWED_HOSTS = config(
     "ALLOWED_HOSTS",
@@ -57,6 +57,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "core.context_processors.user_preferences",
             ],
         },
     },
@@ -65,11 +66,13 @@ TEMPLATES = [
 WSGI_APPLICATION = "prayerstreak.wsgi.application"
 
 
+DATABASE_URL = config("DATABASE_URL", default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}")
+
 DATABASES = {
     "default": dj_database_url.config(
-        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
+        default=DATABASE_URL,
         conn_max_age=600,
-        ssl_require=not DEBUG,
+        ssl_require=(not DEBUG and DATABASE_URL.startswith(("postgres://", "postgresql://"))),
     )
 }
 
@@ -121,6 +124,21 @@ AUTH_USER_MODEL = "core.User"
 LOGIN_URL = "/login/"
 LOGIN_REDIRECT_URL = "/dashboard/"
 LOGOUT_REDIRECT_URL = "/"
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = config("EMAIL_HOST", default="smtp.gmail.com")
+EMAIL_PORT = config("EMAIL_PORT", default=587, cast=int)
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = config("EMAIL_HOST_USER", default="")
+EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD", default="")
+DEFAULT_FROM_EMAIL = config(
+    "DEFAULT_FROM_EMAIL",
+    default="PrayerStreak PH <noreply@prayerstreakph.com>",
+)
+SITE_URL = config("SITE_URL", default="http://127.0.0.1:8000")
+VAPID_PUBLIC_KEY = config("VAPID_PUBLIC_KEY", default="")
+VAPID_PRIVATE_KEY = config("VAPID_PRIVATE_KEY", default="")
+VAPID_ADMIN_EMAIL = config("VAPID_ADMIN_EMAIL", default="admin@prayerstreakph.com")
 
 
 # Production overrides

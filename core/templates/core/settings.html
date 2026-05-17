@@ -34,7 +34,7 @@
                     <div class="flex items-center justify-between gap-4">
                         <p class="font-semibold text-ps-blue">High contrast mode</p>
                         <label class="toggle-switch">
-                            <input type="checkbox" name="dark_mode" {% if user.dark_mode %}checked{% endif %}>
+                            <input id="dark-mode-toggle" type="checkbox" name="dark_mode" onchange="applyDarkMode(this.checked)" {% if dark_mode_enabled %}checked{% endif %}>
                             <span class="toggle-slider"></span>
                         </label>
                     </div>
@@ -156,19 +156,16 @@
                         {% if card.active_plan %}
                             <div class="mt-4">
                                 <div class="flex justify-between text-xs font-semibold" style="color:#6B5B3E">
-                                    <span>Day {{ card.active_plan.current_day }} of {{ card.plan.days }}</span>
+                                    <span>Day {{ card.completed_count }} of {{ card.plan.days }} complete</span>
                                     <span>{{ card.progress_percent }}%</span>
                                 </div>
                                 <div class="mt-1 h-2 rounded-full" style="background:#EDE8DC">
                                     <div class="h-2 rounded-full" style="background:#8B6914; width:{{ card.progress_percent }}%;"></div>
                                 </div>
                             </div>
-                            <a href="/dashboard/" class="btn-primary mt-4 inline-block">Continue - Day {{ card.active_plan.current_day }} of {{ card.plan.days }}</a>
+                            <a href="{% url 'bible_plan_detail' card.plan.pk %}" class="btn-primary mt-4 inline-block">Continue - Day {{ card.active_plan.current_day }} of {{ card.plan.days }}</a>
                         {% else %}
-                            <form method="post" action="{% url 'start_prayer_plan' card.plan.pk %}" class="mt-4">
-                                {% csrf_token %}
-                                <button type="submit" class="btn-primary">Start plan</button>
-                            </form>
+                            <a href="{% url 'bible_plan_detail' card.plan.pk %}" class="btn-primary mt-4 inline-block">Start plan</a>
                         {% endif %}
                     </article>
                 {% empty %}
@@ -194,6 +191,16 @@
 </div>
 
 <script>
+    const darkToggle = document.getElementById("dark-mode-toggle");
+    if (darkToggle) {
+        const storedDark = localStorage.getItem("prayerstreak_dark");
+        if (storedDark !== null) {
+            darkToggle.checked = storedDark === "1";
+        } else {
+            darkToggle.checked = document.documentElement.classList.contains("dark-mode");
+        }
+    }
+
     const vapidPublicKey = "{{ vapid_public_key|escapejs }}";
     const pushButton = document.getElementById("enable-push-btn");
     const pushStatus = document.getElementById("push-status");

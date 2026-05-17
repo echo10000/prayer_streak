@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 
 {% block title %}Daily Prayer | PrayerStreak PH{% endblock %}
+{% block og_title %}Your Prayer Dashboard | PrayerStreak PH{% endblock %}
+{% block og_description %}Track your daily prayer streak, read Scripture, and journal your prayers.{% endblock %}
 
 {% block content %}
 <div class="space-y-8">
@@ -239,13 +241,14 @@
             </div>
         </div>
         <div class="card-surface p-6">
-            <p class="text-sm font-semibold uppercase tracking-wide" style="color:#8B6914">Prayer plan</p>
+            <p class="text-sm font-semibold uppercase tracking-wide" style="color:#8B6914">Active plan</p>
             {% if active_plan %}
                 <p class="mt-3 font-bold text-ps-blue">{{ active_plan.plan.title }}</p>
                 <p class="mt-1 text-sm" style="color:#6B5B3E">Day {{ active_plan.current_day }} of {{ active_plan.plan.days }}</p>
+                <a href="{% url 'bible_plan_day' active_plan.plan.pk active_plan.current_day %}" class="btn-primary btn-sm mt-4 inline-block">Continue reading</a>
             {% elif featured_plan %}
                 <p class="mt-3 font-bold text-ps-blue">{{ featured_plan.title }}</p>
-                <form method="post" action="{% url 'start_prayer_plan' featured_plan.pk %}" class="mt-4">
+                <form method="post" action="{% url 'start_bible_plan' featured_plan.pk %}" class="mt-4">
                     {% csrf_token %}
                     <button class="btn-primary btn-sm">Start plan</button>
                 </form>
