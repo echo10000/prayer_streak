@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}PrayerStreak PH{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ["Poppins", "sans-serif"]
+                    },
+                    colors: {
+                        ps: {
+                            gold: "#F59E0B",
+                            blue: "#1E3A5F",
+                            white: "#FFFFFF"
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="min-h-screen bg-white font-sans text-ps-blue">
+    <header class="border-b border-amber-100 bg-white">
+        <nav class="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
+            <a href="/" class="text-xl font-extrabold text-ps-blue">
+                <span class="text-ps-gold">Prayer</span>Streak PH
+            </a>
+
+            <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
+                <div class="flex flex-wrap gap-x-5 gap-y-2 text-sm font-semibold">
+                    <a href="/" class="hover:text-ps-gold">Home</a>
+                    <a href="/dashboard/" class="hover:text-ps-gold">Dashboard</a>
+                    <a href="/leaderboard/" class="hover:text-ps-gold">Leaderboard</a>
+                    <a href="/invite/" class="hover:text-ps-gold">Invite</a>
+                    <a href="/donate/" class="hover:text-ps-gold">Donate</a>
+                </div>
+
+                <div class="flex items-center gap-3 text-sm font-semibold">
+                    {% if user.is_authenticated %}
+                        <span class="rounded-full bg-amber-50 px-3 py-1 text-ps-blue">{{ user.username }}</span>
+                        <form method="post" action="{% url 'logout' %}">
+                            {% csrf_token %}
+                            <button type="submit" class="rounded-full bg-ps-blue px-4 py-2 text-white hover:bg-ps-gold">
+                                Logout
+                            </button>
+                        </form>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="hover:text-ps-gold">Login</a>
+                        <a href="{% url 'register' %}" class="rounded-full bg-ps-gold px-4 py-2 text-white hover:bg-ps-blue">
+                            Register
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="mx-auto min-h-[calc(100vh-168px)] max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="border-t border-amber-100 bg-white px-4 py-6 text-center text-sm font-medium text-ps-blue">
+        Made with &#128591; in the Philippines
+    </footer>
+</body>
+</html>
