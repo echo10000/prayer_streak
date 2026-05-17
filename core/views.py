@@ -9,7 +9,7 @@ from django.utils import timezone
 from django.shortcuts import redirect, render
 
 from .forms import DonationForm, RegisterForm
-from .models import DailyVerse, PrayerLog, Referral, StreakLog
+from .models import DailyDevotional, DailyVerse, PrayerLog, Referral, StreakLog
 from .utils import update_streak
 
 
@@ -79,11 +79,13 @@ def logout_view(request):
 @login_required(login_url="/login/")
 def dashboard_view(request):
     today = timezone.localdate()
+    devotional = DailyDevotional.objects.filter(date=today).first()
     daily_verse = DailyVerse.objects.filter(date=today).first()
     prayer_log = PrayerLog.objects.filter(user=request.user, date=today).first()
 
     if request.method == "POST" and prayer_log is None:
         content = request.POST.get("content", "").strip()
+        category = request.POST.get("category", PrayerLog.Category.PETITION)
         if content:
             try:
                 with transaction.atomic():
@@ -95,7 +97,7 @@ def dashboard_view(request):
                     prayer_log, created = PrayerLog.objects.get_or_create(
                         user=locked_user,
                         date=today,
-                        defaults={"content": content},
+                        defaults={"content": content, "category": category},
                     )
 
                     if created:
@@ -118,9 +120,14 @@ def dashboard_view(request):
     total_referrals = Referral.objects.filter(referrer=request.user).count()
 
     context = {
+        "devotional": devotional,
         "daily_verse": daily_verse,
+        "prayer_categories": PrayerLog.Category.choices,
         "fallback_verse_text": "The Lord is near to all who call on him, to all who call on him in truth.",
         "fallback_verse_reference": "Psalm 145:18",
+        "fallback_reflection": "Prayer is not a performance. It is returning to the Father who is already near. Take a quiet moment today to name what you are carrying, receive God's nearness, and offer your day back to Him.",
+        "fallback_prayer_prompt": "Lord, draw my heart close to You today. Teach me to trust Your presence in ordinary moments, and help me love my family, neighbors, and country with patience and grace.",
+        "fallback_journal_prompt": "Where do I need to become still and trust God today?",
         "prayer_log": prayer_log,
         "rank": rank,
         "total_referrals": total_referrals,

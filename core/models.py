@@ -42,8 +42,42 @@ class DailyVerse(models.Model):
         return f"{self.reference} - {self.date}"
 
 
+class DailyDevotional(models.Model):
+    title = models.CharField(max_length=160)
+    scripture_reference = models.CharField(max_length=120)
+    scripture_text = models.TextField()
+    reflection = models.TextField()
+    prayer_prompt = models.TextField()
+    journal_prompt = models.TextField()
+    date = models.DateField(unique=True)
+    season = models.CharField(max_length=80, blank=True)
+
+    class Meta:
+        ordering = ("-date",)
+
+    def __str__(self):
+        return f"{self.title} - {self.date}"
+
+
 class PrayerLog(models.Model):
+    class Category(models.TextChoices):
+        THANKSGIVING = "thanksgiving", "Thanksgiving"
+        CONFESSION = "confession", "Confession"
+        PETITION = "petition", "Petition"
+        INTERCESSION = "intercession", "Intercession"
+        HEALING = "healing", "Healing"
+        FAMILY = "family", "Family"
+        WORK_SCHOOL = "work_school", "Work or School"
+        NATION = "nation", "Nation"
+        CHURCH = "church", "Church"
+        ANSWERED_PRAYER = "answered_prayer", "Answered Prayer"
+
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    category = models.CharField(
+        max_length=30,
+        choices=Category.choices,
+        default=Category.PETITION,
+    )
     content = models.TextField()
     date = models.DateField(auto_now_add=True)
     is_answered = models.BooleanField(default=False)

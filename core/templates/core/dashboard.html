@@ -1,79 +1,155 @@
 {% extends "base.html" %}
 
-{% block title %}Dashboard | PrayerStreak PH{% endblock %}
+{% block title %}Daily Prayer | PrayerStreak PH{% endblock %}
 
 {% block content %}
-<div class="space-y-6">
-    <div class="rounded-xl border border-dashed border-amber-200 bg-amber-50 px-4 py-4 text-center text-sm font-semibold uppercase tracking-wide text-ps-blue">
-        Ad slot
-    </div>
-
-    <section class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <div class="rounded-xl border border-amber-100 bg-white p-5 shadow-sm shadow-amber-100">
-            <p class="text-sm font-semibold text-slate-500">Current streak</p>
-            <p class="mt-2 text-3xl font-extrabold text-ps-blue">{{ user.streak }} &#128293;</p>
-        </div>
-        <div class="rounded-xl border border-amber-100 bg-white p-5 shadow-sm shadow-amber-100">
-            <p class="text-sm font-semibold text-slate-500">Total points</p>
-            <p class="mt-2 text-3xl font-extrabold text-ps-blue">{{ user.points }}</p>
-        </div>
-        <div class="rounded-xl border border-amber-100 bg-white p-5 shadow-sm shadow-amber-100">
-            <p class="text-sm font-semibold text-slate-500">Leaderboard rank</p>
-            <p class="mt-2 text-3xl font-extrabold text-ps-blue">#{{ rank }}</p>
-        </div>
-        <div class="rounded-xl border border-amber-100 bg-white p-5 shadow-sm shadow-amber-100">
-            <p class="text-sm font-semibold text-slate-500">Referrals made</p>
-            <p class="mt-2 text-3xl font-extrabold text-ps-blue">{{ total_referrals }}</p>
+<div class="space-y-8">
+    <section class="overflow-hidden rounded-2xl border border-amber-100 bg-gradient-to-br from-ps-blue via-[#254b78] to-[#6b5524] text-white shadow-sm">
+        <div class="grid gap-6 p-6 sm:p-8 lg:grid-cols-[1.15fr_0.85fr]">
+            <div>
+                <p class="text-sm font-semibold uppercase tracking-wide text-amber-200">Be still and pray</p>
+                <h1 class="mt-3 text-3xl font-extrabold leading-tight sm:text-4xl">
+                    Your daily rhythm with God
+                </h1>
+                <p class="mt-4 max-w-2xl leading-7 text-amber-50">
+                    Read Scripture, reflect slowly, pray honestly, and write what God is placing on your heart today.
+                </p>
+            </div>
+            <div class="rounded-2xl border border-white/15 bg-white/10 p-5">
+                <p class="text-sm font-semibold text-amber-100">Today's practice</p>
+                <ol class="mt-4 space-y-3 text-sm font-medium text-white">
+                    <li>1. Read God's Word</li>
+                    <li>2. Sit with the reflection</li>
+                    <li>3. Pray using the prompt</li>
+                    <li>4. Journal and close with Amen</li>
+                </ol>
+            </div>
         </div>
     </section>
 
-    <section class="rounded-xl border-2 border-ps-gold bg-white p-6 shadow-sm shadow-amber-100">
-        <div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+    <section class="rounded-2xl border border-amber-100 bg-white p-6 shadow-sm shadow-amber-100 sm:p-8">
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div>
-                <p class="text-sm font-semibold uppercase tracking-wide text-ps-gold">Today's verse</p>
-                {% if daily_verse %}
-                    <blockquote class="mt-3 text-2xl font-bold leading-relaxed text-ps-blue">
-                        "{{ daily_verse.verse_text }}"
-                    </blockquote>
-                    <p class="mt-3 text-sm font-semibold text-slate-600">{{ daily_verse.reference }}</p>
-                {% else %}
-                    <blockquote class="mt-3 text-2xl font-bold leading-relaxed text-ps-blue">
-                        "{{ fallback_verse_text }}"
-                    </blockquote>
-                    <p class="mt-3 text-sm font-semibold text-slate-600">{{ fallback_verse_reference }}</p>
+                <p class="text-sm font-semibold uppercase tracking-wide text-ps-gold">Today's devotion</p>
+                <h2 class="mt-2 text-3xl font-extrabold text-ps-blue">
+                    {% if devotional %}{{ devotional.title }}{% else %}The Lord Is Near{% endif %}
+                </h2>
+                {% if devotional and devotional.season %}
+                    <p class="mt-2 text-sm font-semibold text-slate-500">{{ devotional.season }}</p>
                 {% endif %}
             </div>
             <p class="rounded-full bg-amber-50 px-3 py-1 text-sm font-semibold text-ps-blue">{{ today|date:"M d, Y" }}</p>
         </div>
+
+        <div class="mt-6 grid gap-5 lg:grid-cols-[0.95fr_1.05fr]">
+            <div class="rounded-2xl border-2 border-ps-gold bg-amber-50 p-5">
+                <p class="text-sm font-bold uppercase tracking-wide text-ps-gold">Scripture</p>
+                <blockquote class="mt-3 text-2xl font-extrabold leading-relaxed text-ps-blue">
+                    {% if devotional %}
+                        "{{ devotional.scripture_text }}"
+                    {% elif daily_verse %}
+                        "{{ daily_verse.verse_text }}"
+                    {% else %}
+                        "{{ fallback_verse_text }}"
+                    {% endif %}
+                </blockquote>
+                <p class="mt-4 text-sm font-bold text-slate-600">
+                    {% if devotional %}
+                        {{ devotional.scripture_reference }}
+                    {% elif daily_verse %}
+                        {{ daily_verse.reference }}
+                    {% else %}
+                        {{ fallback_verse_reference }}
+                    {% endif %}
+                </p>
+            </div>
+
+            <div class="rounded-2xl border border-amber-100 bg-white p-5 shadow-sm">
+                <p class="text-sm font-bold uppercase tracking-wide text-ps-gold">Reflection</p>
+                <p class="mt-3 leading-8 text-slate-700">
+                    {% if devotional %}{{ devotional.reflection }}{% else %}{{ fallback_reflection }}{% endif %}
+                </p>
+            </div>
+        </div>
+
+        <div class="mt-5 grid gap-5 md:grid-cols-2">
+            <div class="rounded-2xl bg-[#f8faf7] p-5">
+                <p class="text-sm font-bold uppercase tracking-wide text-ps-gold">Prayer prompt</p>
+                <p class="mt-3 leading-7 text-ps-blue">
+                    {% if devotional %}{{ devotional.prayer_prompt }}{% else %}{{ fallback_prayer_prompt }}{% endif %}
+                </p>
+            </div>
+            <div class="rounded-2xl bg-[#f8faf7] p-5">
+                <p class="text-sm font-bold uppercase tracking-wide text-ps-gold">Journal question</p>
+                <p class="mt-3 leading-7 text-ps-blue">
+                    {% if devotional %}{{ devotional.journal_prompt }}{% else %}{{ fallback_journal_prompt }}{% endif %}
+                </p>
+            </div>
+        </div>
     </section>
 
-    <section class="rounded-xl border border-amber-100 bg-white p-6 shadow-sm shadow-amber-100">
+    <section class="rounded-2xl border border-amber-100 bg-white p-6 shadow-sm shadow-amber-100 sm:p-8">
         <div class="mb-5">
             <p class="text-sm font-semibold uppercase tracking-wide text-ps-gold">Prayer journal</p>
-            <h1 class="mt-2 text-2xl font-extrabold text-ps-blue">Today's prayer</h1>
+            <h2 class="mt-2 text-2xl font-extrabold text-ps-blue">Write today's prayer</h2>
         </div>
 
         {% if prayer_log %}
-            <div class="rounded-xl border border-green-100 bg-green-50 p-5">
+            <div class="rounded-2xl border border-green-100 bg-green-50 p-5">
                 <p class="mb-3 text-sm font-bold text-green-700">Already prayed today &#9989;</p>
-                <p class="whitespace-pre-line leading-7 text-ps-blue">{{ prayer_log.content }}</p>
+                <p class="text-sm font-semibold uppercase tracking-wide text-green-700">{{ prayer_log.get_category_display }}</p>
+                <p class="mt-3 whitespace-pre-line leading-8 text-ps-blue">{{ prayer_log.content }}</p>
             </div>
         {% else %}
-            <form method="post" class="space-y-4">
+            <form method="post" class="space-y-5">
                 {% csrf_token %}
                 <div>
-                    <label for="content" class="mb-2 block text-sm font-semibold text-ps-blue">Write your prayer for today</label>
-                    <textarea id="content" name="content" rows="7" required class="w-full resize-none rounded-xl border border-amber-100 px-4 py-3 text-ps-blue outline-none transition placeholder:text-slate-400 focus:border-ps-gold focus:ring-2 focus:ring-amber-100" placeholder="Lord, today I pray for..."></textarea>
+                    <label for="category" class="mb-2 block text-sm font-semibold text-ps-blue">Prayer focus</label>
+                    <select id="category" name="category" class="w-full rounded-xl border border-amber-100 px-4 py-3 text-ps-blue outline-none transition focus:border-ps-gold focus:ring-2 focus:ring-amber-100">
+                        {% for value, label in prayer_categories %}
+                            <option value="{{ value }}">{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="rounded-2xl border border-amber-100 bg-amber-50 p-4">
+                    <p class="text-sm font-bold text-ps-blue">Guided prayer</p>
+                    <div class="mt-3 grid gap-3 text-sm text-slate-700 sm:grid-cols-2">
+                        <p>Lord, thank You for...</p>
+                        <p>Forgive me for...</p>
+                        <p>Please help me with...</p>
+                        <p>Today I surrender...</p>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="content" class="mb-2 block text-sm font-semibold text-ps-blue">Your prayer</label>
+                    <textarea id="content" name="content" rows="9" required class="w-full resize-none rounded-xl border border-amber-100 px-4 py-3 text-ps-blue outline-none transition placeholder:text-slate-400 focus:border-ps-gold focus:ring-2 focus:ring-amber-100" placeholder="Lord, today I come before You..."></textarea>
                 </div>
                 <button type="submit" class="w-full rounded-xl bg-ps-gold px-5 py-3 font-bold text-white transition hover:bg-ps-blue sm:w-auto">
-                    Save today's prayer
+                    Close with Amen
                 </button>
             </form>
         {% endif %}
     </section>
 
-    <div class="rounded-xl border border-dashed border-amber-200 bg-amber-50 px-4 py-4 text-center text-sm font-semibold uppercase tracking-wide text-ps-blue">
-        Ad slot
-    </div>
+    <section class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div class="rounded-xl border border-amber-100 bg-white p-5 shadow-sm shadow-amber-100">
+            <p class="text-sm font-semibold text-slate-500">Prayer rhythm</p>
+            <p class="mt-2 text-3xl font-extrabold text-ps-blue">{{ user.streak }} days</p>
+        </div>
+        <div class="rounded-xl border border-amber-100 bg-white p-5 shadow-sm shadow-amber-100">
+            <p class="text-sm font-semibold text-slate-500">Encouragement points</p>
+            <p class="mt-2 text-3xl font-extrabold text-ps-blue">{{ user.points }}</p>
+        </div>
+        <div class="rounded-xl border border-amber-100 bg-white p-5 shadow-sm shadow-amber-100">
+            <p class="text-sm font-semibold text-slate-500">Community rank</p>
+            <p class="mt-2 text-3xl font-extrabold text-ps-blue">#{{ rank }}</p>
+        </div>
+        <div class="rounded-xl border border-amber-100 bg-white p-5 shadow-sm shadow-amber-100">
+            <p class="text-sm font-semibold text-slate-500">Friends invited</p>
+            <p class="mt-2 text-3xl font-extrabold text-ps-blue">{{ total_referrals }}</p>
+        </div>
+    </section>
 </div>
 {% endblock %}

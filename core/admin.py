@@ -4,7 +4,15 @@ from django.contrib import admin, messages
 from django.contrib.auth.admin import UserAdmin
 from django.db import IntegrityError
 
-from .models import DailyVerse, Donation, PrayerLog, Referral, StreakLog, User
+from .models import (
+    DailyDevotional,
+    DailyVerse,
+    Donation,
+    PrayerLog,
+    Referral,
+    StreakLog,
+    User,
+)
 
 
 @admin.register(User)
@@ -87,10 +95,18 @@ class DailyVerseAdmin(admin.ModelAdmin):
         return obj.verse_text[:60]
 
 
+@admin.register(DailyDevotional)
+class DailyDevotionalAdmin(admin.ModelAdmin):
+    list_display = ("date", "title", "scripture_reference", "season")
+    list_filter = ("season", "date")
+    search_fields = ("title", "scripture_reference", "scripture_text", "reflection")
+    ordering = ("-date",)
+
+
 @admin.register(PrayerLog)
 class PrayerLogAdmin(admin.ModelAdmin):
-    list_display = ("user", "date", "is_answered", "content_preview")
-    list_filter = ("is_answered", "date")
+    list_display = ("user", "date", "category", "is_answered", "content_preview")
+    list_filter = ("category", "is_answered", "date")
     search_fields = ("user__username",)
 
     @admin.display(description="Content preview")
